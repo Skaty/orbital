@@ -1,7 +1,7 @@
 # NUS Orbital Project
 
-[![Build Status](https://travis-ci.com/Skaty/orbital.svg?token=qVVpPxs9GTkyDJi9cTmr&branch=master)](https://travis-ci.com/Skaty/orbital)
-[![Build Status](https://travis-ci.com/Skaty/orbital.svg?token=qVVpPxs9GTkyDJi9cTmr&branch=develop)](https://travis-ci.com/Skaty/orbital)
+[![Build Status](https://travis-ci.org/Skaty/orbital.svg?branch=master)](https://travis-ci.org/Skaty/orbital)
+[![Build Status](https://travis-ci.org/Skaty/orbital.svg?branch=develop)](https://travis-ci.com/Skaty/orbital)
 
 A project for NUS Orbital.
 
