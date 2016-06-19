@@ -1,0 +1,18 @@
+---
+engines:
+  duplication:
+    enabled: true
+    config:
+      languages:
+      - javascript
+      - python
+  fixme:
+    enabled: true
+  radon:
+    enabled: true
+ratings:
+  paths:
+  - "**.js"
+  - "**.jsx"
+  - "**.py"
+exclude_paths: []

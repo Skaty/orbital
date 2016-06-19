@@ -4,5 +4,4 @@ python:
 addons:
   code_climate:
     repo_token: c711107a821fc3b78db7028995deb601bb43af70473c6349bada5f8fe27bda0a
-before_script: cd src
-script: python manage.py test
+script: python src/manage.py test
