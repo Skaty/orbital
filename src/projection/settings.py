@@ -125,7 +125,3 @@ STATIC_URL = '/static/'
 # Test Runner Configuration
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
-NOSE_ARGS = [
-    '--with-coverage',
-    '--cover-package=projects',
-]
