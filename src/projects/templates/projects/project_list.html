@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <div class="container">
+        <h2>Hosted Projects</h2>
+        <ul>
+            {% for project in object_list %}
+                <li>{{ project.name }} by
+                {% for facilitator in project.facilitators.all %}
+                    {{ facilitator.username }}
+                {% endfor %}
+                </li>
+            {% endfor %}
+        </ul>
+    </div>
+{% endblock %}
