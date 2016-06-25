@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <div class="container">
+        <h2>Team {{ projectgroup.name }} for Project {{ projectgroup.project }}</h2>
+        {% if projectgroup.project.goal %}
+            <div class="page-header">
+              <h2><span class="label label-warning">Project Goal</span> {{ projectgroup.project.goal.name }}</h2>
+            </div>
+            <p><b>Description of Goal:</b> {{ projectgroup.project.goal.description }}</p>
+            {% if projectgroup.project.goal.deadline %}
+                <p>Due On: {{ projectgroup.project.goal.deadline }}</p>
+            {% else %}
+                <p>No Due Date!</p>
+            {% endif %}
+        {% endif %}
+        <div class="page-header">
+          <h3>Project Milestones</h3>
+        </div>
+        {% if projectgroup.project.milestone_set.count != 0 %}
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            {% for milestone in projectgroup.project.milestone_set.all %}
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                                {{ milestone.name }} (Due On: {{ milestone.deadline|default:"Not specified" }})
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapse{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ forloop.counter }}">
+                        <div class="panel-body"><b>Description of Milestone:</b> <p>{{ milestone.description }}</p></div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p>Hurrah! There are no milestones pending!</p>
+        {% endif %}
+
+        <div class="page-header">
+          <h3>Group Targets <a href="#" class="btn btn-success" role="button">Add Target</a></h3>
+        </div>
+        {% if projectgroup.target_set.count != 0 %}
+        <b>{{ projectgroup.target_set.count }}</b>
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+            {% for target in projectgroup.target_set.all %}
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                                {{ target.name }} (Due On: {{ target.deadline|default:"Not specified" }})
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="collapse{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ forloop.counter }}">
+                        <div class="panel-body"><b>Description:</b> <p>{{ target.description }}</p></div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p>There are no targets!</p>
+        {% endif %}
+    </div>
+{% endblock %}
