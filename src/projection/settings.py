@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django_nose',
     'projects',
     'targets',
+    'dashboard',
 ]
 
 MIDDLEWARE_CLASSES = [
