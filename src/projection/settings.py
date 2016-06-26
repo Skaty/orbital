@@ -131,3 +131,9 @@ STATICFILES_DIRS = [
 # Test Runner Configuration
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
+# Redirects
+
+LOGIN_URL = '/auth/login/'
+
+LOGIN_REDIRECT_URL = '/'
+
