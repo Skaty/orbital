@@ -1,14 +1,16 @@
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
+from django.utils.decorators import method_decorator
 from django.views.generic import ListView, DetailView
 
 from projects.models import Project
 
-
+@method_decorator(login_required, name='dispatch')
 class ProjectListView(ListView):
     model = Project
 
-
+@method_decorator(login_required, name='dispatch')
 class ProjectDetailView(DetailView):
     model = Project
 
