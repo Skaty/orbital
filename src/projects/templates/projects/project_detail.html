@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <div class="container">
+        <h2>Project: {{ object.name }}</h2>
+        {% if object.goal %}
+            <div class="page-header">
+              <h2><span class="label label-warning">Project Goal</span> {{ object.goal.name }} <a href="#" role="button" class="btn btn-default">Modify Goal</a></h2>
+            </div>
+            <p><b>Description of Goal:</b> {{ object.goal.description }}</p>
+            {% if object.goal.deadline %}
+                <p>Due On: {{ object.goal.deadline }}</p>
+            {% else %}
+                <p>No Due Date!</p>
+            {% endif %}
+        {% else %}
+            <div class="page-header">
+              <h2><span class="label label-warning">Project Goal</span> <a href="#" role="button" class="btn btn-success">Add Goal</a></h2>
+            </div>
+        {% endif %}
+        <div class="page-header">
+          <h3>Project Milestones <a href="#" role="button" class="btn btn-default">Add New Milestone</a></h3>
+        </div>
+        {% if object.milestone_set.count != 0 %}
+        <div class="panel-group" id="accordion-milestones" role="tablist" aria-multiselectable="true">
+            {% for milestone in object.milestone_set.all %}
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="milestones-collapse-heading-{{ forloop.counter }}">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#milestones-collapse-{{ forloop.counter }}" aria-expanded="false" aria-controls="milestones-collapse-{{ forloop.counter }}">
+                                {{ milestone.name }} (Due On: {{ milestone.deadline|default:"Not specified" }})
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="milestones-collapse-{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="milestones-collapse-heading-{{ forloop.counter }}">
+                        <div class="panel-body"><b>Description of Milestone:</b> <p>{{ milestone.description }}</p></div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        <div class="page-header">
+          <h3>Project Groups <a href="#" role="button" class="btn btn-default">Create New Group</a></h3>
+        </div>
+        {% if object.projectgroup_set.count != 0 %}
+        <div class="panel-group" id="accordion-projectgroup" role="tablist" aria-multiselectable="true">
+            {% for projectgroup in object.projectgroup_set.all %}
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="projectgroup-collapse-heading-{{ forloop.counter }}">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#projectgroup-collapse-{{ forloop.counter }}" aria-expanded="false" aria-controls="projectgroup-collapse-{{ forloop.counter }}">
+                                {{ projectgroup.name }}
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="projectgroup-collapse-{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="projectgroup-collapse-heading-{{ forloop.counter }}">
+                        <div class="panel-body"><b>Group Members:</b>
+                            {% for member in projectgroup.members.all %}
+                            <ul>
+                                <li>{{ member.username }}</li>
+                            </ul>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+{% endblock %}
