@@ -18,17 +18,17 @@
           <h3>Project Milestones</h3>
         </div>
         {% if projectgroup.project.milestone_set.count != 0 %}
-        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="panel-group" id="accordion-milestones" role="tablist" aria-multiselectable="true">
             {% for milestone in projectgroup.project.milestone_set.all %}
                 <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}">
+                    <div class="panel-heading" role="tab" id="milestones-collapse-heading-{{ forloop.counter }}">
                         <h4 class="panel-title">
-                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#milestones-collapse-{{ forloop.counter }}" aria-expanded="false" aria-controls="milestones-collapse-{{ forloop.counter }}">
                                 {{ milestone.name }} (Due On: {{ milestone.deadline|default:"Not specified" }})
                             </a>
                         </h4>
                     </div>
-                    <div id="collapse{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ forloop.counter }}">
+                    <div id="milestones-collapse-{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="milestones-collapse-heading-{{ forloop.counter }}">
                         <div class="panel-body"><b>Description of Milestone:</b> <p>{{ milestone.description }}</p></div>
                     </div>
                 </div>
@@ -42,18 +42,17 @@
           <h3>Group Targets <a href="#" class="btn btn-success" role="button">Add Target</a></h3>
         </div>
         {% if projectgroup.target_set.count != 0 %}
-        <b>{{ projectgroup.target_set.count }}</b>
-        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+        <div class="panel-group" id="accordion-targets" role="tablist" aria-multiselectable="true">
             {% for target in projectgroup.target_set.all %}
                 <div class="panel panel-default">
-                    <div class="panel-heading" role="tab" id="heading{{ forloop.counter }}">
+                    <div class="panel-heading" role="tab" id="targets-heading-{{ forloop.counter }}">
                         <h4 class="panel-title">
-                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapse{{ forloop.counter }}" aria-expanded="false" aria-controls="collapse{{ forloop.counter }}">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#targets-collapse-{{ forloop.counter }}" aria-expanded="false" aria-controls="targets-collapse-{{ forloop.counter }}">
                                 {{ target.name }} (Due On: {{ target.deadline|default:"Not specified" }})
                             </a>
                         </h4>
                     </div>
-                    <div id="collapse{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="heading{{ forloop.counter }}">
+                    <div id="targets-collapse-{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="targets-heading-{{ forloop.counter }}">
                         <div class="panel-body"><b>Description:</b> <p>{{ target.description }}</p></div>
                     </div>
                 </div>
