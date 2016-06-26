@@ -53,7 +53,16 @@
                         </h4>
                     </div>
                     <div id="targets-collapse-{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="targets-heading-{{ forloop.counter }}">
-                        <div class="panel-body"><b>Description:</b> <p>{{ target.description }}</p></div>
+                        <div class="panel-body">
+                            <b>Description:</b> <p>{{ target.description }}</p>
+                            <hr/>
+                            {% if target.created_by == request.user %}
+                                <form method="POST" action="{% url "dashboard:achievements:delete-group-target" project_id=projectgroup.project.id pk=target.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" value="Confirm" class="btn btn-danger btn-block">Delete</button>
+                                </form>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             {% endfor %}
