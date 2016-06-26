@@ -39,7 +39,7 @@
         {% endif %}
 
         <div class="page-header">
-          <h3>Group Targets <a href="#" class="btn btn-success" role="button">Add Target</a></h3>
+          <h3>Group Targets <a href="{% url 'dashboard:achievements:add-group-target' project_id=projectgroup.project.id %}" class="btn btn-success" role="button">Add Target</a></h3>
         </div>
         {% if projectgroup.target_set.count != 0 %}
         <div class="panel-group" id="accordion-targets" role="tablist" aria-multiselectable="true">
