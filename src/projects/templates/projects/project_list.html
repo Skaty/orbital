@@ -4,7 +4,7 @@
     <div class="container">
         <div class="row">
             <div class="col-md-6">
-                <h2>Projects in which you are a facilitator</h2>
+                <h2>Projects in which you are a facilitator <a href="{% url 'projects:project-create' %}" class="btn btn-success">Create New Project</a></h2>
                 <ul>
                 {% for project in request.user.project_set.all %}
                     <li><a href="{% url "projects:project-detail" pk=project.pk %}">{{ project.name }}</a></li>
