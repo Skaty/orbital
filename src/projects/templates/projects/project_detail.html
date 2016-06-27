@@ -19,7 +19,7 @@
             </div>
         {% endif %}
         <div class="page-header">
-          <h3>Project Milestones <a href="#" role="button" class="btn btn-default">Add New Milestone</a></h3>
+          <h3>Project Milestones <a href="{% url "dashboard:achievements:add-milestone" project_id=object.id %}" role="button" class="btn btn-default">Add New Milestone</a></h3>
         </div>
         {% if object.milestone_set.count != 0 %}
         <div class="panel-group" id="accordion-milestones" role="tablist" aria-multiselectable="true">
@@ -40,7 +40,7 @@
         </div>
         {% endif %}
         <div class="page-header">
-          <h3>Project Groups <a href="#" role="button" class="btn btn-default">Create New Group</a></h3>
+          <h3>Project Groups <a href="{% url "projects:group-create" project_pk=object.pk %}" role="button" class="btn btn-default">Create New Group</a></h3>
         </div>
         {% if object.projectgroup_set.count != 0 %}
         <div class="panel-group" id="accordion-projectgroup" role="tablist" aria-multiselectable="true">
