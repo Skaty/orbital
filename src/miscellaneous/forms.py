@@ -7,7 +7,7 @@ class RegistrationForm(forms.ModelForm):
 
     class Meta:
         model = User
-        fields = ['username', 'password', 'confirm_password', 'email', 'first_name', 'last_name']
+        fields = ['first_name', 'last_name', 'username', 'email', 'password', 'confirm_password']
         widgets = {
             'password': forms.PasswordInput(),
         }

@@ -39,11 +39,24 @@ class ProjectDetailView(DetailView):
 
     def get(self, request, *args, **kwargs):
         self.object = self.get_object()
-        if request.user not in self.object.facilitators.all():
-            messages.error(request, "You are not the facilitator for this project!")
-            return redirect('/')
         context = self.get_context_data(object=self.object)
+
+        if not (context.get('is_facilitator') or context.get('is_member')):
+            messages.error(request, "You are not a member or facilitator of this project!")
+            return redirect('/')
+
         return self.render_to_response(context)
+
+    def get_context_data(self, **kwargs):
+        kwargs['is_facilitator'] = self.request.user in self.object.facilitators.all()
+        kwargs['is_member'] = (self.request.user.projectgroup_set.filter(project=self.object).count() > 0)
+
+        try:
+            kwargs['projectgroup'] = self.request.user.projectgroup_set.get(project=self.object)
+        except ObjectDoesNotExist:
+            kwargs['projectgroup'] = None
+
+        return super(ProjectDetailView, self).get_context_data(**kwargs)
 
 
 @method_decorator(login_required, name='dispatch')
