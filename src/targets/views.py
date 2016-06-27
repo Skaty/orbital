@@ -3,9 +3,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
-from django.views.generic import CreateView, DeleteView
+from django.views.generic import CreateView, DeleteView, UpdateView
 
-from targets.models import Target
+from projects.models import Project
+from targets.models import Target, Goal
 
 
 class TargetGoalCreateView(CreateView):
@@ -32,6 +33,72 @@ class TargetGoalCreateView(CreateView):
         form.instance.group = self.projectgroup
         form.instance.created_by = self.request.user
         return super(TargetGoalCreateView, self).form_valid(form)
+
+
+class GoalCreateView(CreateView):
+    model = Goal
+    template_name_suffix = '_form'
+    fields = ['name', 'description', 'deadline']
+    success_url = ''
+
+    def dispatch(self, request, *args, **kwargs):
+        project_id = self.kwargs.get('project_id')
+        try:
+            self.project = Project.objects.get(id=project_id)
+            if request.user not in self.project.facilitators.all():
+                messages.error(request, 'You are not authorised to perform this action!')
+                return redirect('/')
+        except ObjectDoesNotExist:
+            return redirect('/')
+
+        self.success_url = reverse_lazy('projects:project-detail', kwargs={'pk': self.project.pk})
+
+        return super(GoalCreateView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        """
+        Adds project instance to template context
+        """
+        kwargs['project'] = self.project
+        return super(GoalCreateView, self).get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        form.instance.project = self.project
+        form.instance.created_by = self.request.user
+        return super(GoalCreateView, self).form_valid(form)
+
+
+class GoalUpdateView(UpdateView):
+    model = Goal
+    template_name_suffix = '_form'
+    fields = ['name', 'description', 'deadline']
+
+    def dispatch(self, request, *args, **kwargs):
+        project_id = self.kwargs.get('project_id')
+        try:
+            self.project = Project.objects.get(id=project_id)
+            if request.user not in self.project.facilitators.all():
+                messages.error(request, 'You are not authorised to perform this action!')
+                return redirect('/')
+        except ObjectDoesNotExist:
+            return redirect('/')
+
+        self.success_url = reverse_lazy('projects:project-detail', kwargs={'pk': self.project.pk})
+
+        return super(GoalUpdateView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        """
+        Adds project instance to template context
+        """
+        kwargs['project'] = self.project
+        return super(GoalUpdateView, self).get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        form.instance.project = self.project
+        form.instance.created_by = self.request.user
+        messages.success(self.request, 'Goal for {project} has been successfuly modified!'.format(project=self.project))
+        return super(GoalUpdateView, self).form_valid(form)
 
 
 class TargetDeleteView(DeleteView):

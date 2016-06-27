@@ -5,7 +5,7 @@
         <h2>Project: {{ object.name }}</h2>
         {% if object.goal %}
             <div class="page-header">
-              <h2><span class="label label-warning">Project Goal</span> {{ object.goal.name }} <a href="#" role="button" class="btn btn-default">Modify Goal</a></h2>
+              <h2><span class="label label-warning">Project Goal</span> {{ object.goal.name }} <a href="{% url "dashboard:achievements:update-goal" project_id=object.id pk=object.goal.pk %}" role="button" class="btn btn-default">Modify Goal</a></h2>
             </div>
             <p><b>Description of Goal:</b> {{ object.goal.description }}</p>
             {% if object.goal.deadline %}
@@ -15,7 +15,7 @@
             {% endif %}
         {% else %}
             <div class="page-header">
-              <h2><span class="label label-warning">Project Goal</span> <a href="#" role="button" class="btn btn-success">Add Goal</a></h2>
+              <h2><span class="label label-warning">Project Goal</span> <a href="{% url "dashboard:achievements:add-goal" project_id=object.id %}" role="button" class="btn btn-success">Add Goal</a></h2>
             </div>
         {% endif %}
         <div class="page-header">
