@@ -5,7 +5,7 @@
         <h2>Project: {{ object.name }}</h2>
         {% if object.goal %}
             <div class="page-header">
-              <h2><span class="label label-warning">Project Goal</span> {{ object.goal.name }} {% if is_facilitator %}<a href="{% url "dashboard:achievements:update-goal" project_id=object.id pk=object.goal.pk %}" role="button" class="btn btn-default">Modify Goal</a>{% endif %}</h2>
+              <h2><span class="label label-warning">Project Goal</span> {{ object.goal.name }} {% if is_facilitator %}<a href="{% url "projects:achievements:update-goal" project_pk=object.pk pk=object.goal.pk %}" role="button" class="btn btn-default">Modify Goal</a>{% endif %}</h2>
             </div>
             <p><b>Description of Goal:</b> {{ object.goal.description }}</p>
             {% if object.goal.deadline %}
@@ -15,14 +15,14 @@
             {% endif %}
         {% else %}
             <div class="page-header">
-              <h2><span class="label label-warning">Project Goal</span> <a href="{% url "dashboard:achievements:add-goal" project_id=object.id %}" role="button" class="btn btn-success">Add Goal</a></h2>
+              <h2><span class="label label-warning">Project Goal</span> <a href="{% url "projects:achievements:add-goal" project_pk=object.pk %}" role="button" class="btn btn-success">Add Goal</a></h2>
             </div>
         {% endif %}
         <div class="page-header">
           <h3>
               Project Milestones
               {% if is_facilitator %}
-              <a href="{% url "dashboard:achievements:add-milestone" project_id=object.id %}" role="button" class="btn btn-default">Add New Milestone</a>
+              <a href="{% url "projects:achievements:add-milestone" project_pk=object.pk %}" role="button" class="btn btn-default">Add New Milestone</a>
               {% endif %}
           </h3>
         </div>
@@ -74,7 +74,7 @@
         {% endif %}
         {% else %}
         <div class="page-header">
-          <h3>Group Targets <a href="{% url 'dashboard:achievements:add-group-target' project_id=projectgroup.project.id %}" class="btn btn-success" role="button">Add Target</a></h3>
+          <h3>Group Targets <a href="{% url 'projects:achievements:add-group-target' project_pk=projectgroup.project.pk %}" class="btn btn-success" role="button">Add Target</a></h3>
         </div>
         {% if projectgroup.target_set.count != 0 %}
         <div class="panel-group" id="accordion-targets" role="tablist" aria-multiselectable="true">
@@ -92,7 +92,7 @@
                             <b>Description:</b> <p>{{ target.description }}</p>
                             <hr/>
                             {% if target.created_by == request.user %}
-                                <form method="POST" action="{% url "dashboard:achievements:delete-group-target" project_id=projectgroup.project.id pk=target.pk %}">
+                                <form method="POST" action="{% url "projects:achievements:delete-group-target" project_pk=projectgroup.project.pk pk=target.pk %}">
                                     {% csrf_token %}
                                     <button type="submit" value="Confirm" class="btn btn-danger btn-block">Delete</button>
                                 </form>

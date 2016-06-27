@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'django_nose',
     'projects',
     'targets',
-    'dashboard',
     'miscellaneous',
 ]
 

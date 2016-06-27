@@ -15,13 +15,17 @@ class TargetGoalCreateView(CreateView):
     template_name_suffix = '_group_create_form'
     model = Target
     fields = ['name', 'description', 'deadline']
+    success_url = reverse_lazy('projects:project-list')
 
     def dispatch(self, request, *args, **kwargs):
-        project_id = self.kwargs.get('project_id')
+        project_pk = self.kwargs.get('project_pk')
         try:
-            self.projectgroup = request.user.projectgroup_set.get(project_id=project_id)
+            self.projectgroup = request.user.projectgroup_set.get(project__pk=project_pk)
         except ObjectDoesNotExist:
             return redirect('/')
+
+        self.success_url = reverse_lazy('projects:project-detail',kwargs={'pk': project_pk})
+
         return super(TargetGoalCreateView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
@@ -44,9 +48,9 @@ class GoalCreateView(CreateView):
     success_url = ''
 
     def dispatch(self, request, *args, **kwargs):
-        project_id = self.kwargs.get('project_id')
+        project_pk = self.kwargs.get('project_pk')
         try:
-            self.project = Project.objects.get(id=project_id)
+            self.project = Project.objects.get(id=project_pk)
             if request.user not in self.project.facilitators.all():
                 messages.error(request, 'You are not authorised to perform this action!')
                 return redirect('/')
@@ -76,9 +80,9 @@ class GoalUpdateView(UpdateView):
     fields = ['name', 'description', 'deadline']
 
     def dispatch(self, request, *args, **kwargs):
-        project_id = self.kwargs.get('project_id')
+        project_pk = self.kwargs.get('project_pk')
         try:
-            self.project = Project.objects.get(id=project_id)
+            self.project = Project.objects.get(pk=project_pk)
             if request.user not in self.project.facilitators.all():
                 messages.error(request, 'You are not authorised to perform this action!')
                 return redirect('/')
@@ -109,7 +113,7 @@ class TargetDeleteView(DeleteView):
 
     def dispatch(self, request, *args, **kwargs):
         self.object = self.get_object()
-        self.success_url = reverse_lazy('dashboard:home', kwargs={'project_id': self.object.group.project.id})
+        self.success_url = reverse_lazy('projects:project-detail', kwargs={'pk': self.object.group.project.pk})
         if self.object.created_by != request.user:
             messages.error(request, 'You do not have permission to delete this target!')
             return HttpResponseRedirect(self.success_url)
@@ -125,9 +129,9 @@ class MilestoneCreateView(CreateView):
     success_url = ''
 
     def dispatch(self, request, *args, **kwargs):
-        project_id = self.kwargs.get('project_id')
+        project_pk = self.kwargs.get('project_pk')
         try:
-            self.project = Project.objects.get(id=project_id)
+            self.project = Project.objects.get(pk=project_pk)
             if request.user not in self.project.facilitators.all():
                 messages.error(request, 'You are not authorised to perform this action!')
                 return redirect('/')
