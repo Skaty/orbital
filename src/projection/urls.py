@@ -16,7 +16,10 @@ Including another URLconf
 from django.conf.urls import url, include
 from django.contrib import admin
 
+from miscellaneous.views import HomepageView
+
 urlpatterns = [
+    url(r'^$', HomepageView.as_view()),
     url(r'^admin/', admin.site.urls),
     url(r'^projects/', include('projects.urls', namespace='projects')),
     url(r'^achievements/', include('targets.urls', namespace='achievements')),

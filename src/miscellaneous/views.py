@@ -1,11 +1,21 @@
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.views.generic import CreateView
+from django.views.generic.base import TemplateView
 
 from miscellaneous.forms import RegistrationForm
 
+
+class HomepageView(TemplateView):
+    template_name = 'miscellaneous/index.html'
+    
+    def get(self, request, *args, **kwargs):
+        if request.user.is_authenticated():
+            return redirect('projects:project-list')
+        
+        return super(HomepageView, self).get(request, *args, **kwargs)
 
 class RegistrationView(CreateView):
     model = User

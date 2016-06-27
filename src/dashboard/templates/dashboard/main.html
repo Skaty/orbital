@@ -48,7 +48,7 @@
                     <div class="panel-heading" role="tab" id="targets-heading-{{ forloop.counter }}">
                         <h4 class="panel-title">
                             <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#targets-collapse-{{ forloop.counter }}" aria-expanded="false" aria-controls="targets-collapse-{{ forloop.counter }}">
-                                {{ target.name }} (Due On: {{ target.deadline|default:"Not specified" }})
+                                {{ target.name }} (Due: {{ target.deadline|default:"Not specified" }}, Created by: {{ target.created_by.get_username }})
                             </a>
                         </h4>
                     </div>
