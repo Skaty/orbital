@@ -27,26 +27,26 @@
               {% endif %}
           </h3>
         </div>
-        {% if object.milestone_set.count != 0 %}
+        {% if milestones.count != 0 %}
         <div class="panel-group" id="accordion-milestones" role="tablist" aria-multiselectable="true">
-            {% for milestone in object.milestone_set.all %}
-                <div class="panel {% if milestone.is_due %}panel-danger{% else %}panel-default{% endif %}">
+            {% for milestone in milestones %}
+                <div class="panel {% if milestone.total_tasks != 0 and milestone.tasks_completed == milestone.total_tasks %}panel-success{% elif milestone.is_due %}panel-danger{% else %}panel-default{% endif %}">
                     <div class="panel-heading" role="tab" id="milestones-collapse-heading-{{ forloop.counter }}">
                         <h4 class="panel-title">
                             <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#milestones-collapse-{{ forloop.counter }}" aria-expanded="false" aria-controls="milestones-collapse-{{ forloop.counter }}">
-                                {{ milestone.name }} (Due On: {{ milestone.deadline|default:"Not specified" }})
+                                {{ milestone.meta.name }}<br/>(Tasks Completed: {{ milestone.tasks_completed }}/{{ milestone.total_tasks }}, Due On: {{ milestone.meta.deadline|default:"Not specified" }})
                             </a>
                         </h4>
                     </div>
                     <div id="milestones-collapse-{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="milestones-collapse-heading-{{ forloop.counter }}">
                         <div class="panel-body">
-                            <b>Description of Milestone:</b> <p>{{ milestone.description }}</p>
+                            <b>Description of Milestone:</b> <p>{{ milestone.meta.description }}</p>
                             {% if is_facilitator %}
-                            <form method="POST" action="{% url "projects:achievements:delete-milestone" project_pk=object.pk pk=milestone.pk %}">
+                            <form method="POST" action="{% url "projects:achievements:delete-milestone" project_pk=object.pk pk=milestone.meta.pk %}">
                                 {% csrf_token %}
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <a href="{% url 'projects:achievements:update-milestone' project_pk=object.pk pk=milestone.pk %}" role="button" class="btn btn-default btn-block">Edit Milestone</a>
+                                        <a href="{% url 'projects:achievements:update-milestone' project_pk=object.pk pk=milestone.meta.pk %}" role="button" class="btn btn-default btn-block">Edit Milestone</a>
                                     </div>
                                     <div class="col-sm-6">
                                         <button type="submit" value="Confirm" class="btn btn-danger btn-block">Delete</button>
@@ -106,11 +106,11 @@
         {% if projectgroup.target_set.count != 0 %}
         <div class="panel-group" id="accordion-targets" role="tablist" aria-multiselectable="true">
             {% for target in projectgroup.target_set.all %}
-                <div class="panel {% if target.is_due %}panel-danger{% else %}panel-default{% endif %}">
+                <div class="panel {% if target.completed_on %}panel-success{% elif target.is_due %}panel-danger{% else %}panel-default{% endif %}">
                     <div class="panel-heading" role="tab" id="targets-heading-{{ forloop.counter }}">
                         <h4 class="panel-title">
                             <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#targets-collapse-{{ forloop.counter }}" aria-expanded="false" aria-controls="targets-collapse-{{ forloop.counter }}">
-                                {{ target.name }} (Due On: <span{% if target.is_due %} class="text-danger"{% endif %}>{{ target.deadline|default:"Not specified" }}</span>, Created by: {{ target.created_by.get_username }})
+                                {{ target.name }} (Due On: {{ target.deadline|default:"Not specified" }}, Created by: {{ target.created_by.get_username }})
                             </a>
                         </h4>
                     </div>
@@ -118,6 +118,12 @@
                         <div class="panel-body">
                             <b>Description:</b> <p>{{ target.description }}</p>
                             <hr/>
+                            {% if not target.completed_on %}
+                            <form method="POST" action="{% url "projects:achievements:complete-target" project_pk=object.pk pk=target.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" value="Confirm" class="btn btn-success btn-block">Mark Milestone As Complete!</button>
+                            </form>
+                            {% endif %}
                             {% if target.created_by == request.user %}
                                 <form method="POST" action="{% url "projects:achievements:delete-group-target" project_pk=object.pk pk=target.pk %}">
                                     {% csrf_token %}

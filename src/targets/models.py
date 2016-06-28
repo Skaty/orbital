@@ -37,6 +37,7 @@ class Target(AbstractTarget):
     Unlike a Goal, a ProjectGroup can have multiple Targets
     """
     group = models.ForeignKey('projects.ProjectGroup', on_delete=models.CASCADE)
+    milestone = models.ForeignKey('targets.Milestone', default=None, null=True, blank=True, on_delete=models.SET_NULL)
 
     def __str__(self):
         return self.name

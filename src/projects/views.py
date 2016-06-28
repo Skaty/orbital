@@ -3,12 +3,14 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
+from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 
 from projects.models import Project, ProjectGroup
+from targets.models import Target
 
 
 @method_decorator(login_required, name='dispatch')
@@ -51,11 +53,26 @@ class ProjectDetailView(DetailView):
     def get_context_data(self, **kwargs):
         kwargs['is_facilitator'] = self.request.user in self.object.facilitators.all()
         kwargs['is_member'] = (self.request.user.projectgroup_set.filter(project=self.object).count() > 0)
+        milestones_list = self.object.milestone_set.filter(project=self.object)
+        kwargs['milestones'] = []
 
         try:
             kwargs['projectgroup'] = self.request.user.projectgroup_set.get(project=self.object)
+
+            for milestone in milestones_list:
+                completed_tasks = Target.objects.filter(group=kwargs['projectgroup'], completed_on__isnull=False,
+                                                        milestone=milestone).count()
+                total_tasks = Target.objects.filter(group=kwargs['projectgroup'], milestone=milestone).count()
+
+                kwargs['milestones'] += [{'meta': milestone, 'tasks_completed': completed_tasks,
+                                          'total_tasks': total_tasks}]
         except ObjectDoesNotExist:
             kwargs['projectgroup'] = None
+
+            for milestone in milestones_list:
+                completed_tasks = Target.objects.filter(completed_on__isnull=False, milestone=milestone).count()
+                total_tasks = Target.objects.filter(milestone=milestone).count()
+                kwargs['milestones'] += [{'meta': milestone, 'tasks_completed': completed_tasks, 'total_tasks': total_tasks}]
 
         return super(ProjectDetailView, self).get_context_data(**kwargs)
 
