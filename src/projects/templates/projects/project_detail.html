@@ -3,13 +3,14 @@
 {% block body %}
     <div class="container">
         <h2>Project: {{ object.name }}</h2>
+        <p>Facilitated by: {% for facilitator in object.facilitators.all %} {{ facilitator }} {% endfor %}</p>
         {% if object.goal %}
             <div class="page-header">
               <h2><span class="label label-warning">Project Goal</span> {{ object.goal.name }} {% if is_facilitator %}<a href="{% url "projects:achievements:update-goal" project_pk=object.pk pk=object.goal.pk %}" role="button" class="btn btn-default">Modify Goal</a>{% endif %}</h2>
             </div>
             <p><b>Description of Goal:</b> {{ object.goal.description }}</p>
             {% if object.goal.deadline %}
-                <p>Due On: {{ object.goal.deadline }}</p>
+                <p>Due On: <span {% if object.goal.is_due %} class="text-danger"{% endif %}>{{ object.goal.deadline }}</span> {% if object.goal.is_due %}<span class="label label-danger">OVERDUE</span>{% endif %}</p>
             {% else %}
                 <p>No Due Date!</p>
             {% endif %}
@@ -29,7 +30,7 @@
         {% if object.milestone_set.count != 0 %}
         <div class="panel-group" id="accordion-milestones" role="tablist" aria-multiselectable="true">
             {% for milestone in object.milestone_set.all %}
-                <div class="panel panel-default">
+                <div class="panel {% if milestone.is_due %}panel-danger{% else %}panel-default{% endif %}">
                     <div class="panel-heading" role="tab" id="milestones-collapse-heading-{{ forloop.counter }}">
                         <h4 class="panel-title">
                             <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#milestones-collapse-{{ forloop.counter }}" aria-expanded="false" aria-controls="milestones-collapse-{{ forloop.counter }}">
@@ -38,7 +39,22 @@
                         </h4>
                     </div>
                     <div id="milestones-collapse-{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="milestones-collapse-heading-{{ forloop.counter }}">
-                        <div class="panel-body"><b>Description of Milestone:</b> <p>{{ milestone.description }}</p></div>
+                        <div class="panel-body">
+                            <b>Description of Milestone:</b> <p>{{ milestone.description }}</p>
+                            {% if is_facilitator %}
+                            <form method="POST" action="{% url "projects:achievements:delete-milestone" project_pk=object.pk pk=milestone.pk %}">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <a href="{% url 'projects:achievements:update-milestone' project_pk=object.pk pk=milestone.pk %}" role="button" class="btn btn-default btn-block">Edit Milestone</a>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <button type="submit" value="Confirm" class="btn btn-danger btn-block">Delete</button>
+                                    </div>
+                                </div>
+                            </form>
+                            {% endif %}
+                        </div>
                     </div>
                 </div>
             {% endfor %}
@@ -66,6 +82,17 @@
                                 <li>{{ member.username }}</li>
                             </ul>
                             {% endfor %}
+                            <form method="POST" action="{% url "projects:group-delete" project_pk=object.pk pk=projectgroup.pk %}">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <a href="{% url 'projects:group-edit' project_pk=object.pk pk=projectgroup.pk %}" class="btn btn-default">Edit Group</a>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <button type="submit" value="Confirm" class="btn btn-danger btn-block">Delete</button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>
@@ -79,11 +106,11 @@
         {% if projectgroup.target_set.count != 0 %}
         <div class="panel-group" id="accordion-targets" role="tablist" aria-multiselectable="true">
             {% for target in projectgroup.target_set.all %}
-                <div class="panel panel-default">
+                <div class="panel {% if target.is_due %}panel-danger{% else %}panel-default{% endif %}">
                     <div class="panel-heading" role="tab" id="targets-heading-{{ forloop.counter }}">
                         <h4 class="panel-title">
                             <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#targets-collapse-{{ forloop.counter }}" aria-expanded="false" aria-controls="targets-collapse-{{ forloop.counter }}">
-                                {{ target.name }} (Due: {{ target.deadline|default:"Not specified" }}, Created by: {{ target.created_by.get_username }})
+                                {{ target.name }} (Due On: <span{% if target.is_due %} class="text-danger"{% endif %}>{{ target.deadline|default:"Not specified" }}</span>, Created by: {{ target.created_by.get_username }})
                             </a>
                         </h4>
                     </div>
@@ -92,7 +119,7 @@
                             <b>Description:</b> <p>{{ target.description }}</p>
                             <hr/>
                             {% if target.created_by == request.user %}
-                                <form method="POST" action="{% url "projects:achievements:delete-group-target" project_pk=projectgroup.project.pk pk=target.pk %}">
+                                <form method="POST" action="{% url "projects:achievements:delete-group-target" project_pk=object.pk pk=target.pk %}">
                                     {% csrf_token %}
                                     <button type="submit" value="Confirm" class="btn btn-danger btn-block">Delete</button>
                                 </form>

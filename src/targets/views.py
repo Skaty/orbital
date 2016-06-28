@@ -153,3 +153,51 @@ class MilestoneCreateView(CreateView):
         form.instance.project = self.project
         form.instance.created_by = self.request.user
         return super(MilestoneCreateView, self).form_valid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class MilestoneUpdateView(UpdateView):
+    model = Milestone
+    template_name_suffix = '_form'
+    fields = ['name', 'description', 'deadline']
+
+    def dispatch(self, request, *args, **kwargs):
+        project_pk = self.kwargs.get('project_pk')
+        try:
+            self.project = Project.objects.get(pk=project_pk)
+            if self.project.facilitators.filter(pk=request.user.pk).count() <= 0:
+                messages.error(request, 'You are not authorised to perform this action!')
+                return redirect('/')
+        except ObjectDoesNotExist:
+            return redirect('/')
+
+        self.success_url = reverse_lazy('projects:project-detail', kwargs={'pk': self.project.pk})
+
+        return super(MilestoneUpdateView, self).dispatch(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        """
+        Adds project instance to template context
+        """
+        kwargs['project'] = self.project
+        return super(MilestoneUpdateView, self).get_context_data(**kwargs)
+
+    def form_valid(self, form):
+        form.instance.project = self.project
+        form.instance.created_by = self.request.user
+        messages.success(self.request, 'Milestone for {project} has been successfuly modified!'.format(project=self.project))
+        return super(MilestoneUpdateView, self).form_valid(form)
+
+
+class MilestoneDeleteView(DeleteView):
+    model = Milestone
+    success_url = ''
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.success_url = reverse_lazy('projects:project-detail', kwargs={'pk': self.object.project.pk})
+        if self.object.project.facilitators.filter(pk=request.user.pk).count() <= 0:
+            messages.error(request, 'You do not have permission to delete this target!')
+            return HttpResponseRedirect(self.success_url)
+
+        return super(MilestoneDeleteView, self).dispatch(request, *args, **kwargs)

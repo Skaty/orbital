@@ -1,11 +1,12 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, ListView, DetailView
+from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 
 from projects.models import Project, ProjectGroup
 
@@ -28,7 +29,7 @@ class ProjectCreateView(CreateView):
 
     def form_valid(self, form):
         self.object = form.save()
-        if self.request.user not in self.object.facilitators.all():
+        if self.object.facilitators.filter(pk=self.request.user.pk).count() <= 0:
             self.object.facilitators.add(self.request.user)
         return HttpResponseRedirect(reverse_lazy('projects:project-detail', kwargs={'pk': self.object.pk}))
 
@@ -77,8 +78,47 @@ class ProjectGroupCreateView(CreateView):
         self.success_url = reverse_lazy('projects:project-detail', kwargs={'pk': self.project.pk})
 
         return super(ProjectGroupCreateView, self).dispatch(request, *args, **kwargs)
+
+    def get_form(self, form_class=None):
+        form = super(ProjectGroupCreateView, self).get_form(form_class)
+        form.fields['members'].queryset = User.objects.exclude(project__pk=self.project.pk)
+        return form
     
     def form_valid(self, form):
         form.instance.project = self.project
         return super(ProjectGroupCreateView, self).form_valid(form)
 
+
+@method_decorator(login_required, name='dispatch')
+class ProjectGroupUpdateView(UpdateView):
+    model = ProjectGroup
+    fields = ['name', 'members']
+
+    def dispatch(self, request, *args, **kwargs):
+        project_pk = self.kwargs.get('project_pk')
+        try:
+            self.project = Project.objects.get(pk=project_pk)
+            if self.project.facilitators.filter(pk=request.user.pk).count() <= 0:
+                messages.error(request, 'You are not authorised to perform this action!')
+                return redirect('/')
+        except ObjectDoesNotExist:
+            return redirect('/')
+
+        self.success_url = reverse_lazy('projects:project-detail', kwargs={'pk': self.project.pk})
+
+        return super(ProjectGroupUpdateView, self).dispatch(request, *args, **kwargs)
+
+
+@method_decorator(login_required, name='dispatch')
+class ProjectGroupDeleteView(DeleteView):
+    model = ProjectGroup
+    success_url = ''
+
+    def dispatch(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        self.success_url = reverse_lazy('projects:project-detail', kwargs={'pk': self.object.project.pk})
+        if self.object.project.facilitators.filter(pk=request.user.pk).count() <= 0:
+            messages.error(request, 'You do not have permission to delete this target!')
+            return HttpResponseRedirect(self.success_url)
+
+        return super(ProjectGroupDeleteView, self).dispatch(request, *args, **kwargs)
