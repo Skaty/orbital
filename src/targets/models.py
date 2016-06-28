@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.utils import timezone
 
 
 class AbstractTarget(models.Model):
@@ -13,6 +14,12 @@ class AbstractTarget(models.Model):
     created_on = models.DateTimeField(auto_now_add=True)
     modified_on = models.DateTimeField(auto_now=True)
     deadline = models.DateTimeField(null=True, blank=True)
+
+    def is_due(self):
+        if not self.deadline:
+            return False
+
+        return self.deadline < timezone.now()
 
     class Meta:
         abstract = True
