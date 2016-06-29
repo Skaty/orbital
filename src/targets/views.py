@@ -1,30 +1,60 @@
+import inspect
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
+from django.utils import timezone
 from django.utils.decorators import method_decorator
-from django.views.generic import CreateView, DeleteView, UpdateView
+from django.views.generic import View, CreateView, DeleteView, UpdateView
 
 from projects.models import Project
-from targets.models import Target, Goal, Milestone
+from targets.models import Target, Goal, Milestone, AbstractTarget
 
+
+@method_decorator(login_required, name='dispatch')
+class CompleteAchievementView(View):
+    type = None
+    object = None
+
+    def post(self, request, *args, **kwargs):
+        if not inspect.isclass(self.type) or not issubclass(self.type, AbstractTarget):
+            print(kwargs)
+            return redirect('/')
+
+        try:
+            self.object = self.type.objects.get(pk=self.kwargs.get('pk', None))
+        except ObjectDoesNotExist:
+            messages.error(request, 'Sorry, we are unable to process your request at the moment!')
+            return redirect('/')
+
+        if not self.object.has_permission(request.user):
+            messages.error(request, 'You are not authorised to perform this action!')
+            return redirect('/')
+
+        self.object.completed_on = timezone.now()
+        self.object.save()
+
+        messages.info(request, 'You have marked {} as completed'.format(self.object))
+
+        return redirect('projects:project-detail', pk=self.kwargs.get('project_pk'))
 
 class TargetGoalCreateView(CreateView):
     template_name_suffix = '_group_create_form'
     model = Target
-    fields = ['name', 'description', 'deadline']
+    fields = ['name', 'milestone', 'description', 'deadline']
     success_url = reverse_lazy('projects:project-list')
 
     def dispatch(self, request, *args, **kwargs):
-        project_pk = self.kwargs.get('project_pk')
+        self.project_pk = self.kwargs.get('project_pk')
         try:
-            self.projectgroup = request.user.projectgroup_set.get(project__pk=project_pk)
+            self.projectgroup = request.user.projectgroup_set.get(project__pk=self.project_pk)
         except ObjectDoesNotExist:
             return redirect('/')
 
-        self.success_url = reverse_lazy('projects:project-detail',kwargs={'pk': project_pk})
+        self.success_url = reverse_lazy('projects:project-detail',kwargs={'pk': self.project_pk})
 
         return super(TargetGoalCreateView, self).dispatch(request, *args, **kwargs)
 
@@ -34,6 +64,11 @@ class TargetGoalCreateView(CreateView):
         """
         kwargs['projectgroup'] = self.projectgroup
         return super(TargetGoalCreateView, self).get_context_data(**kwargs)
+
+    def get_form(self, form_class=None):
+        form = super(TargetGoalCreateView, self).get_form(form_class)
+        form.fields['milestone'].queryset = Milestone.objects.filter(project__pk=self.project_pk)
+        return form
 
     def form_valid(self, form):
         form.instance.group = self.projectgroup
@@ -57,7 +92,7 @@ class GoalCreateView(CreateView):
         except ObjectDoesNotExist:
             return redirect('/')
 
-        self.success_url = reverse_lazy('projects:project-detail', kwargs={'pk': self.project.pk})
+        self.success_url = reverse_lazy('projects:project-detail', pk=self.project.pk)
 
         return super(GoalCreateView, self).dispatch(request, *args, **kwargs)
 
