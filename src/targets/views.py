@@ -92,7 +92,7 @@ class GoalCreateView(CreateView):
         except ObjectDoesNotExist:
             return redirect('/')
 
-        self.success_url = reverse_lazy('projects:project-detail', pk=self.project.pk)
+        self.success_url = reverse_lazy('projects:project-detail',  kwargs={'pk': self.project.pk})
 
         return super(GoalCreateView, self).dispatch(request, *args, **kwargs)
 
