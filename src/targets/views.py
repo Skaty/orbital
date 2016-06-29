@@ -39,7 +39,7 @@ class CompleteAchievementView(View):
 
         messages.info(request, 'You have marked {} as completed'.format(self.object))
 
-        return redirect('projects:project-detail',kwargs={'pk': self.kwargs.get('project_pk')})
+        return redirect('projects:project-detail', pk=self.kwargs.get('project_pk'))
 
 class TargetGoalCreateView(CreateView):
     template_name_suffix = '_group_create_form'
