@@ -34,7 +34,7 @@
                     <div class="panel-heading" role="tab" id="milestones-collapse-heading-{{ forloop.counter }}">
                         <h4 class="panel-title">
                             <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#milestones-collapse-{{ forloop.counter }}" aria-expanded="false" aria-controls="milestones-collapse-{{ forloop.counter }}">
-                                {{ milestone.meta.name }}<br/>(Tasks Completed: {{ milestone.tasks_completed }}/{{ milestone.total_tasks }}, Due On: {{ milestone.meta.deadline|default:"Not specified" }})
+                                {{ milestone.meta.name }}<br/>({% if is_facilitator %}Groups{% else %}Tasks{% endif %} Completed: {{ milestone.tasks_completed }}/{{ milestone.total_tasks }}, Due On: {{ milestone.meta.deadline|default:"Not specified" }})
                             </a>
                         </h4>
                     </div>
@@ -64,29 +64,42 @@
         <div class="page-header">
           <h3>Project Groups <a href="{% url "projects:group-create" project_pk=object.pk %}" role="button" class="btn btn-default">Create New Group</a></h3>
         </div>
-        {% if object.projectgroup_set.count != 0 %}
+        {% if projectgroups.count != 0 %}
         <div class="panel-group" id="accordion-projectgroup" role="tablist" aria-multiselectable="true">
-            {% for projectgroup in object.projectgroup_set.all %}
+            {% for projectgroup in projectgroups %}
                 <div class="panel panel-default">
                     <div class="panel-heading" role="tab" id="projectgroup-collapse-heading-{{ forloop.counter }}">
                         <h4 class="panel-title">
                             <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#projectgroup-collapse-{{ forloop.counter }}" aria-expanded="false" aria-controls="projectgroup-collapse-{{ forloop.counter }}">
-                                {{ projectgroup.name }}
+                                {{ projectgroup.meta.name }}
                             </a>
                         </h4>
                     </div>
                     <div id="projectgroup-collapse-{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="projectgroup-collapse-heading-{{ forloop.counter }}">
-                        <div class="panel-body"><b>Group Members:</b>
-                            {% for member in projectgroup.members.all %}
-                            <ul>
-                                <li>{{ member.username }}</li>
-                            </ul>
-                            {% endfor %}
-                            <form method="POST" action="{% url "projects:group-delete" project_pk=object.pk pk=projectgroup.pk %}">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <b>Group Members:</b>
+                                    {% for member in projectgroup.meta.members.all %}
+                                    <ul>
+                                        <li>{{ member.username }}</li>
+                                    </ul>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-6">
+                                    <b>Milestones:</b>
+                                    {% for milestone in projectgroup.milestones %}
+                                    <ul>
+                                        <li>{{ milestone.name }} (Tasks Completed: {{ milestone.completed_tasks }}/{{ milestone.total }})</li>
+                                    </ul>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <form method="POST" action="{% url "projects:group-delete" project_pk=object.pk pk=projectgroup.meta.pk %}">
                                 {% csrf_token %}
                                 <div class="row">
                                     <div class="col-sm-6">
-                                        <a href="{% url 'projects:group-edit' project_pk=object.pk pk=projectgroup.pk %}" class="btn btn-default">Edit Group</a>
+                                        <a href="{% url 'projects:group-edit' project_pk=object.pk pk=projectgroup.meta.pk %}" class="btn btn-block btn-default">Edit Group</a>
                                     </div>
                                     <div class="col-sm-6">
                                         <button type="submit" value="Confirm" class="btn btn-danger btn-block">Delete</button>

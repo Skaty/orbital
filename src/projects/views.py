@@ -3,7 +3,6 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
-from django.db.models import Count
 from django.http import HttpResponseRedirect
 from django.shortcuts import render, redirect
 from django.utils.decorators import method_decorator
@@ -56,7 +55,7 @@ class ProjectDetailView(DetailView):
         milestones_list = self.object.milestone_set.filter(project=self.object)
         kwargs['milestones'] = []
 
-        try:
+        if kwargs['is_member']:
             kwargs['projectgroup'] = self.request.user.projectgroup_set.get(project=self.object)
 
             for milestone in milestones_list:
@@ -66,13 +65,30 @@ class ProjectDetailView(DetailView):
 
                 kwargs['milestones'] += [{'meta': milestone, 'tasks_completed': completed_tasks,
                                           'total_tasks': total_tasks}]
-        except ObjectDoesNotExist:
-            kwargs['projectgroup'] = None
+        elif kwargs['is_facilitator']:
+            kwargs['projectgroups'] = [{'meta': x} for x in self.object.projectgroup_set.all()]
 
             for milestone in milestones_list:
-                completed_tasks = Target.objects.filter(completed_on__isnull=False, milestone=milestone).count()
-                total_tasks = Target.objects.filter(milestone=milestone).count()
-                kwargs['milestones'] += [{'meta': milestone, 'tasks_completed': completed_tasks, 'total_tasks': total_tasks}]
+                group_completed = 0
+                group_total = len(kwargs['projectgroups'])
+
+                for idx, group in enumerate(kwargs['projectgroups']):
+                    completed_tasks = Target.objects.filter(group_id=group['meta'], completed_on__isnull=False,
+                                                            milestone=milestone).count()
+                    total_tasks = Target.objects.filter(group_id=group['meta'], milestone=milestone).count()
+
+                    milestone_obj = {'name': milestone.name, 'completed_tasks': completed_tasks, 'total': total_tasks}
+
+                    if total_tasks != 0 and completed_tasks == total_tasks:
+                        group_completed += 1
+                        milestone_obj['is_completed'] = True
+                    else:
+                        milestone_obj['is_completed'] = False
+
+                    kwargs['projectgroups'][idx].setdefault('milestones', []).append(milestone_obj)
+
+                kwargs['milestones'] += [{'meta': milestone, 'tasks_completed': group_completed,
+                                          'total_tasks': group_total}]
 
         return super(ProjectDetailView, self).get_context_data(**kwargs)
 
