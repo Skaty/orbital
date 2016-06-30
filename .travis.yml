@@ -4,14 +4,15 @@ python:
 addons:
   code_climate:
     repo_token: c711107a821fc3b78db7028995deb601bb43af70473c6349bada5f8fe27bda0a
-script: coverage run --branch --omit=*test*,*migrations* --source=projects manage.py test
+script: coverage run --branch --omit=*test*,*migrations* --source=projects manage.py
+  test
 after_script:
 - codeclimate-test-reporter
 deploy:
   provider: heroku
   api_key:
-    secure: qDeSK0tmbAt+IbS1J5z3i6Y7VcfyndTUA2HYiOdS7+pEY0noCv7Ipyv0oJG3m0A5t0bQLWQV5Q2Kp6OBLnc2w05kHgLkEtRQW1AHJiq1bqdsmwOHgcKKW570y7RuhYUW+Dq/FwxonnCF6hL3Qtnn3Z/cyOhwTECAlpQ8ATiuJi9x7VRExM+5ITy/U+bYXud5oAW765ClWaw0JP2nsF3ezlpynNv2CeS9Ba18XWL1K67QoKSGVERWxUaW4qT/2ywWUR7hya+G3neutjH+e+2sLqevowSwcBI4qJ4fQdMA03W0t62AwyUVZwC1iX5T8nSEzvpih0+fyaW8d0OyVu/xl5lFzht0V5u4BjXeF92U2n/R5nfZoAgP5Jk3Z/+zDJ/l4Tk6ZGTEd0K4QFqIfmzI6C6B+kGbj/2r59qkfSY2IJxnF/8n2XNEBkMW1f82sxijWV8kdEnHbdX3JoVhchtptjs+X0La8mpv8c1PU3/zgwJt/KJHI4He76UbCIqPkHFFKzI+2CoxRjN8GP9xUTHSCg8eP3/k2z0VWZbThdeN0CqTwX7gwssAA8cHZCFPMry/DEEpZ9tZBM9QZW7tBHwDMCa9W3GCB/S9PYkOUYxCTzgzvNuYKYslyICuk1wp51hBjQ7HSrT+HeZuIMmjfvqsRBKlQ2ZvJ1JGKYHcX9ZnfY8=
+    secure: YujeVG+kHM5LjAwdBlHP0VvXTd2JvPHkRj+0R2y9a/K5wykxmFE01nAC5Q/TpjzgKoUeIHIC2/2bJ+NzH8QO7JU98jJfDWlIfTPViSBnmRBzMaqwBVYPh3WKLxFW/ZX9XFC36rx1g7SvBqgs/op8jeV/VInF6fpmWRKNgQbQ00PP3SVyfTN76tck23HWWVSjQ870XDREsAZkM6CtAqckbdXxyBA/UCn7h56/bDdUyKs6pAdEoXzyzfi7MMhy0c4qbc/jgd+OqosXla6kGyc0GXbljG71cOvor0LxuS6E2jjbCUXq3uzn1jby6ubClJz6a4d2yKxi3ePRwIdLIaduPJWVuEAqldY02XDv0HJdEeIFhf8eCHZwQZtT5AMChzt5clSpSG/N9J4PuvLRjwCLlRHDDQBntpbLAxDS1vnmf/GQDB8lKwZp2SC4RYJ2cCdF8NIsbb6hXiZbGBj1OVsJRbLCm2+wqmFhfU+3ufNfp6nnQyfY3rEDdpkSrlPId5TUdQPrT2CfqnBwzCI0yNJMxxnx9+HwmuJBrABPpFcC812XRqJKCQxtF2gfh08/9sWns4rZJ6A1HRZyfZbwIklfnH87E/Of1XDtNirdabswjzVolZpjUhM9Qnc9ge+WEUUrH6d9vdA8YUUWCXhjCeP+DZm/9W+eW9WgublG3ahUgas=
   app:
     master: orbital2016
     deployment-test: orbital2016-dev
-  run: "python manage.py migrate"
+  run: python manage.py migrate
