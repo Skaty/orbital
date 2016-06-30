@@ -13,5 +13,5 @@ deploy:
     secure: qDeSK0tmbAt+IbS1J5z3i6Y7VcfyndTUA2HYiOdS7+pEY0noCv7Ipyv0oJG3m0A5t0bQLWQV5Q2Kp6OBLnc2w05kHgLkEtRQW1AHJiq1bqdsmwOHgcKKW570y7RuhYUW+Dq/FwxonnCF6hL3Qtnn3Z/cyOhwTECAlpQ8ATiuJi9x7VRExM+5ITy/U+bYXud5oAW765ClWaw0JP2nsF3ezlpynNv2CeS9Ba18XWL1K67QoKSGVERWxUaW4qT/2ywWUR7hya+G3neutjH+e+2sLqevowSwcBI4qJ4fQdMA03W0t62AwyUVZwC1iX5T8nSEzvpih0+fyaW8d0OyVu/xl5lFzht0V5u4BjXeF92U2n/R5nfZoAgP5Jk3Z/+zDJ/l4Tk6ZGTEd0K4QFqIfmzI6C6B+kGbj/2r59qkfSY2IJxnF/8n2XNEBkMW1f82sxijWV8kdEnHbdX3JoVhchtptjs+X0La8mpv8c1PU3/zgwJt/KJHI4He76UbCIqPkHFFKzI+2CoxRjN8GP9xUTHSCg8eP3/k2z0VWZbThdeN0CqTwX7gwssAA8cHZCFPMry/DEEpZ9tZBM9QZW7tBHwDMCa9W3GCB/S9PYkOUYxCTzgzvNuYKYslyICuk1wp51hBjQ7HSrT+HeZuIMmjfvqsRBKlQ2ZvJ1JGKYHcX9ZnfY8=
   app:
     master: orbital2016
-    release/prerelease: orbital2016-staging
+    deployment-test: orbital2016-dev
   run: "python manage.py migrate"
