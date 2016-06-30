@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <h2>Projects in which you are a facilitator <a href="{% url 'projects:project-create' %}" class="btn btn-success">Create New Project</a></h2>
+                <ul>
+                {% for project in request.user.project_set.all %}
+                    <li><a href="{% url "projects:project-detail" pk=project.pk %}">{{ project.name }}</a></li>
+                {% endfor %}
+                </ul>
+            </div>
+            <div class="col-md-6">
+                <h2>Projects in which you are a member</h2>
+                <ul>
+                {% for projectgroup in request.user.projectgroup_set.all %}
+                    <li><a href="{% url "projects:project-detail" pk=projectgroup.project.pk %}">Group {{ projectgroup.name }} working on {{ projectgroup.project.name }}</a></li>
+                {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+{% endblock %}

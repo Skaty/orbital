@@ -1,4 +1,18 @@
 language: python
 python:
-  - "3.5"
-script: nosetests
+- '3.5'
+addons:
+  code_climate:
+    repo_token: c711107a821fc3b78db7028995deb601bb43af70473c6349bada5f8fe27bda0a
+script: coverage run --branch --omit=*test*,*migrations* --source=projects manage.py
+  test
+after_script:
+- codeclimate-test-reporter
+deploy:
+  provider: heroku
+  app:
+    master: orbital2016
+    deployment-test: orbital2016-dev
+  run: python manage.py migrate
+  api_key:
+    secure: 2J+dKrs0mF7qgp/RO1jIgS2RJ8QDfiarbTlVEtrV6Mw741BhTQWOyuE6h/Gm+Y0MwWFg2TnWYwMQQdAMe0diIvH39+AYv+7gfxH0l+r5SvtA2XizkY0KhEbNVbIr2Fe/SIr3fTev6Qa9xBDnt+DvBxvQ3MzeuvihUM8iZBGkyktvXLtfI1tOgsvmPd0pWGnaPSSlP2i194PVdZ+w8fApcyPmXeaHz51dXX6pWQx02Jr0SknTshXCcSw92uMMpJYxjLO7VVja0yxhJRhCezs2o8+wEV/MW4+PpbbcHDR0xmBuMEz/c7xrNjuQu/zwg8uWiBvGdIEnn/9K92nTppwK9Df4iP3LZuDZUSsMm+gUp0L+CdW3t3+W7dotpWX18wF9Hly8FCXniBvr882AcTyVcceguqcwopj5gdAJaTfCHiNBshCfUusu6jvvJoouopJFmSATmWiRAueXeufapnIT4P+PfNrdaagSb5R8bcja83ISgJuWxtEa0YerNskW4UhQPK9RJykCVkx55z+9/tCS0jSuZLUckBHNsLb+NDPOM568D/2/oZWm+5VTibdNbvVnfQgRr4Mel2wE23eEl6+X6x8qksu3eXW2oK4cb7tK33azzOVwGOZ4nJBx/tXPM0N4WQPg66PYjSNU28GfJ7ja48e758/CrLTocRdgrvs90GM=

@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block body %}
+    <div class="container">
+        <h2>Project: {{ object.name }}</h2>
+        <p>Facilitated by: {% for facilitator in object.facilitators.all %} {{ facilitator }} {% endfor %}</p>
+        {% if object.goal %}
+            <div class="page-header">
+              <h2><span class="label label-warning">Project Goal</span> {{ object.goal.name }} {% if is_facilitator %}<a href="{% url "projects:achievements:update-goal" project_pk=object.pk pk=object.goal.pk %}" role="button" class="btn btn-default">Modify Goal</a>{% endif %}</h2>
+            </div>
+            <p><b>Description of Goal:</b> {{ object.goal.description }}</p>
+            {% if object.goal.deadline %}
+                <p>Due On: <span {% if object.goal.is_due %} class="text-danger"{% endif %}>{{ object.goal.deadline }}</span> {% if object.goal.is_due %}<span class="label label-danger">OVERDUE</span>{% endif %}</p>
+            {% else %}
+                <p>No Due Date!</p>
+            {% endif %}
+        {% else %}
+            <div class="page-header">
+              <h2><span class="label label-warning">Project Goal</span> <a href="{% url "projects:achievements:add-goal" project_pk=object.pk %}" role="button" class="btn btn-success">Add Goal</a></h2>
+            </div>
+        {% endif %}
+        <div class="page-header">
+          <h3>
+              Project Milestones
+              {% if is_facilitator %}
+              <a href="{% url "projects:achievements:add-milestone" project_pk=object.pk %}" role="button" class="btn btn-default">Add New Milestone</a>
+              {% endif %}
+          </h3>
+        </div>
+        {% if milestones.count != 0 %}
+        <div class="panel-group" id="accordion-milestones" role="tablist" aria-multiselectable="true">
+            {% for milestone in milestones %}
+                <div class="panel {% if milestone.total_tasks != 0 and milestone.tasks_completed == milestone.total_tasks %}panel-success{% elif milestone.is_due %}panel-danger{% else %}panel-default{% endif %}">
+                    <div class="panel-heading" role="tab" id="milestones-collapse-heading-{{ forloop.counter }}">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#milestones-collapse-{{ forloop.counter }}" aria-expanded="false" aria-controls="milestones-collapse-{{ forloop.counter }}">
+                                {{ milestone.meta.name }}<br/>({% if is_facilitator %}Groups{% else %}Tasks{% endif %} Completed: {{ milestone.tasks_completed }}/{{ milestone.total_tasks }}, Due On: {{ milestone.meta.deadline|default:"Not specified" }})
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="milestones-collapse-{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="milestones-collapse-heading-{{ forloop.counter }}">
+                        <div class="panel-body">
+                            <b>Description of Milestone:</b> <p>{{ milestone.meta.description }}</p>
+                            {% if is_facilitator %}
+                            <form method="POST" action="{% url "projects:achievements:delete-milestone" project_pk=object.pk pk=milestone.meta.pk %}">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <a href="{% url 'projects:achievements:update-milestone' project_pk=object.pk pk=milestone.meta.pk %}" role="button" class="btn btn-default btn-block">Edit Milestone</a>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <button type="submit" value="Confirm" class="btn btn-danger btn-block">Delete</button>
+                                    </div>
+                                </div>
+                            </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% if is_facilitator %}
+        <div class="page-header">
+          <h3>Project Groups <a href="{% url "projects:group-create" project_pk=object.pk %}" role="button" class="btn btn-default">Create New Group</a></h3>
+        </div>
+        {% if projectgroups.count != 0 %}
+        <div class="panel-group" id="accordion-projectgroup" role="tablist" aria-multiselectable="true">
+            {% for projectgroup in projectgroups %}
+                <div class="panel panel-default">
+                    <div class="panel-heading" role="tab" id="projectgroup-collapse-heading-{{ forloop.counter }}">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#projectgroup-collapse-{{ forloop.counter }}" aria-expanded="false" aria-controls="projectgroup-collapse-{{ forloop.counter }}">
+                                {{ projectgroup.meta.name }}
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="projectgroup-collapse-{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="projectgroup-collapse-heading-{{ forloop.counter }}">
+                        <div class="panel-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <b>Group Members:</b>
+                                    {% for member in projectgroup.meta.members.all %}
+                                    <ul>
+                                        <li>{{ member.username }}</li>
+                                    </ul>
+                                    {% endfor %}
+                                </div>
+                                <div class="col-md-6">
+                                    <b>Milestones:</b>
+                                    {% for milestone in projectgroup.milestones %}
+                                    <ul>
+                                        <li>{{ milestone.name }} (Tasks Completed: {{ milestone.completed_tasks }}/{{ milestone.total }})</li>
+                                    </ul>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                            <form method="POST" action="{% url "projects:group-delete" project_pk=object.pk pk=projectgroup.meta.pk %}">
+                                {% csrf_token %}
+                                <div class="row">
+                                    <div class="col-sm-6">
+                                        <a href="{% url 'projects:group-edit' project_pk=object.pk pk=projectgroup.meta.pk %}" class="btn btn-block btn-default">Edit Group</a>
+                                    </div>
+                                    <div class="col-sm-6">
+                                        <button type="submit" value="Confirm" class="btn btn-danger btn-block">Delete</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+        {% else %}
+        <div class="page-header">
+          <h3>Group Targets <a href="{% url 'projects:achievements:add-group-target' project_pk=projectgroup.project.pk %}" class="btn btn-success" role="button">Add Target</a></h3>
+        </div>
+        {% if projectgroup.target_set.count != 0 %}
+        <div class="panel-group" id="accordion-targets" role="tablist" aria-multiselectable="true">
+            {% for target in projectgroup.target_set.all %}
+                <div class="panel {% if target.completed_on %}panel-success{% elif target.is_due %}panel-danger{% else %}panel-default{% endif %}">
+                    <div class="panel-heading" role="tab" id="targets-heading-{{ forloop.counter }}">
+                        <h4 class="panel-title">
+                            <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#targets-collapse-{{ forloop.counter }}" aria-expanded="false" aria-controls="targets-collapse-{{ forloop.counter }}">
+                                {{ target.name }} (Due On: {{ target.deadline|default:"Not specified" }}, Created by: {{ target.created_by.get_username }})
+                            </a>
+                        </h4>
+                    </div>
+                    <div id="targets-collapse-{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="targets-heading-{{ forloop.counter }}">
+                        <div class="panel-body">
+                            <b>Description:</b> <p>{{ target.description }}</p>
+                            <b>Milestone:</b> <p>{{ target.milestone }}</p>
+                            <hr/>
+                            {% if not target.completed_on %}
+                            <form method="POST" action="{% url "projects:achievements:complete-target" project_pk=object.pk pk=target.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" value="Confirm" class="btn btn-success btn-block">Mark Milestone As Complete!</button>
+                            </form>
+                            {% endif %}
+                            {% if target.created_by == request.user %}
+                                <form method="POST" action="{% url "projects:achievements:delete-group-target" project_pk=object.pk pk=target.pk %}">
+                                    {% csrf_token %}
+                                    <button type="submit" value="Confirm" class="btn btn-danger btn-block">Delete</button>
+                                </form>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        {% else %}
+            <p>There are no targets!</p>
+        {% endif %}
+        {% endif %}
+    </div>
+{% endblock %}
