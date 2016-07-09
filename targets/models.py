@@ -38,6 +38,7 @@ class Target(AbstractTarget):
     """
     group = models.ForeignKey('projects.ProjectGroup', on_delete=models.CASCADE)
     milestone = models.ForeignKey('targets.Milestone', default=None, null=True, blank=True, on_delete=models.SET_NULL)
+    assigned_to = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name="assigned_targets")
 
     def __str__(self):
         return self.name
