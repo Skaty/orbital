@@ -1,6 +1,7 @@
 import inspect
 
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
@@ -44,7 +45,7 @@ class CompleteAchievementView(View):
 class TargetGoalCreateView(CreateView):
     template_name_suffix = '_group_create_form'
     model = Target
-    fields = ['name', 'milestone', 'description', 'deadline']
+    fields = ['name', 'milestone', 'description', 'assigned_to', 'deadline']
     success_url = reverse_lazy('projects:project-list')
 
     def dispatch(self, request, *args, **kwargs):
@@ -68,6 +69,7 @@ class TargetGoalCreateView(CreateView):
     def get_form(self, form_class=None):
         form = super(TargetGoalCreateView, self).get_form(form_class)
         form.fields['milestone'].queryset = Milestone.objects.filter(project__pk=self.project_pk)
+        form.fields['assigned_to'].queryset = self.projectgroup.members.all()
         return form
 
     def form_valid(self, form):
