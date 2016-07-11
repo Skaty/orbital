@@ -31,12 +31,21 @@ class CompleteAchievementView(View):
             messages.error(request, 'Sorry, we are unable to process your request at the moment!')
             return redirect('/')
 
-        if not self.object.has_permission(request.user):
-            messages.error(request, 'You are not authorised to perform this action!')
-            return redirect('/')
+        if hasattr(self.object, 'assigned_to'):
+            if request.user not in self.object.assigned_to.all():
+                messages.error(request, 'You are not authorised to perform this action!')
+                return redirect('/')
 
-        self.object.completed_on = timezone.now()
-        self.object.save()
+            assignee_metadata = self.object.targetassignment_set.get(assignee=request.user)
+            assignee_metadata.marked_completed_on = timezone.now()
+            assignee_metadata.save()
+        else:
+            if not self.object.has_permission(request.user):
+                messages.error(request, 'You are not authorised to perform this action!')
+                return redirect('/')
+
+            self.object.completed_on = timezone.now()
+            self.object.save()
 
         messages.info(request, 'You have marked {} as completed'.format(self.object))
 
