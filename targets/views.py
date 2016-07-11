@@ -12,7 +12,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import View, CreateView, DeleteView, UpdateView
 
 from projects.models import Project
-from targets.models import Target, Goal, Milestone, AbstractTarget
+from targets.models import Target, Goal, Milestone, AbstractTarget, TargetAssignment
 
 
 @method_decorator(login_required, name='dispatch')
@@ -75,6 +75,22 @@ class TargetGoalCreateView(CreateView):
     def form_valid(self, form):
         form.instance.group = self.projectgroup
         form.instance.created_by = self.request.user
+
+        if 'assigned_to' in form.cleaned_data:
+            self.object = form.save(commit=False)
+            self.object.save()
+            for assigned_user in form.cleaned_data['assigned_to']:
+                relation, is_created = TargetAssignment.objects.get_or_create(
+                    assignee=assigned_user,
+                    target=self.object
+                )
+
+            del form.cleaned_data['assigned_to']
+
+            self.object.save_m2m()
+
+            return HttpResponseRedirect(self.get_success_url())
+
         return super(TargetGoalCreateView, self).form_valid(form)
 
 
