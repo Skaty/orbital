@@ -87,7 +87,7 @@ class TargetGoalCreateView(CreateView):
 
             del form.cleaned_data['assigned_to']
 
-            self.object.save_m2m()
+            form.save_m2m()
 
             return HttpResponseRedirect(self.get_success_url())
 
