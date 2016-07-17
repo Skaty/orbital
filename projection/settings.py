@@ -41,9 +41,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_nose',
-    'projects',
-    'targets',
-    'miscellaneous',
+    'projects.apps.ProjectsConfig',
+    'targets.apps.TargetsConfig',
+    'miscellaneous.apps.MiscellaneousConfig',
 ]
 
 MIDDLEWARE_CLASSES = [
