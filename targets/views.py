@@ -1,6 +1,7 @@
 import inspect
 
 from django.contrib import messages
+from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse_lazy
@@ -11,7 +12,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import View, CreateView, DeleteView, UpdateView
 
 from projects.models import Project
-from targets.models import Target, Goal, Milestone, AbstractTarget
+from targets.models import Target, Goal, Milestone, AbstractTarget, TargetAssignment
 
 
 @method_decorator(login_required, name='dispatch')
@@ -30,12 +31,21 @@ class CompleteAchievementView(View):
             messages.error(request, 'Sorry, we are unable to process your request at the moment!')
             return redirect('/')
 
-        if not self.object.has_permission(request.user):
-            messages.error(request, 'You are not authorised to perform this action!')
-            return redirect('/')
+        if hasattr(self.object, 'assigned_to'):
+            if request.user not in self.object.assigned_to.all():
+                messages.error(request, 'You are not authorised to perform this action!')
+                return redirect('/')
 
-        self.object.completed_on = timezone.now()
-        self.object.save()
+            assignee_metadata = self.object.targetassignment_set.get(assignee=request.user)
+            assignee_metadata.marked_completed_on = timezone.now()
+            assignee_metadata.save()
+        else:
+            if not self.object.has_permission(request.user):
+                messages.error(request, 'You are not authorised to perform this action!')
+                return redirect('/')
+
+            self.object.completed_on = timezone.now()
+            self.object.save()
 
         messages.info(request, 'You have marked {} as completed'.format(self.object))
 
@@ -44,7 +54,7 @@ class CompleteAchievementView(View):
 class TargetGoalCreateView(CreateView):
     template_name_suffix = '_group_create_form'
     model = Target
-    fields = ['name', 'milestone', 'description', 'deadline']
+    fields = ['name', 'milestone', 'description', 'assigned_to', 'deadline']
     success_url = reverse_lazy('projects:project-list')
 
     def dispatch(self, request, *args, **kwargs):
@@ -68,11 +78,28 @@ class TargetGoalCreateView(CreateView):
     def get_form(self, form_class=None):
         form = super(TargetGoalCreateView, self).get_form(form_class)
         form.fields['milestone'].queryset = Milestone.objects.filter(project__pk=self.project_pk)
+        form.fields['assigned_to'].queryset = self.projectgroup.members.all()
         return form
 
     def form_valid(self, form):
         form.instance.group = self.projectgroup
         form.instance.created_by = self.request.user
+
+        if 'assigned_to' in form.cleaned_data:
+            self.object = form.save(commit=False)
+            self.object.save()
+            for assigned_user in form.cleaned_data['assigned_to']:
+                relation, is_created = TargetAssignment.objects.get_or_create(
+                    assignee=assigned_user,
+                    target=self.object
+                )
+
+            del form.cleaned_data['assigned_to']
+
+            form.save_m2m()
+
+            return HttpResponseRedirect(self.get_success_url())
+
         return super(TargetGoalCreateView, self).form_valid(form)
 
 

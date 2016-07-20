@@ -131,8 +131,24 @@
                         <div class="panel-body">
                             <b>Description:</b> <p>{{ target.description }}</p>
                             <b>Milestone:</b> <p>{{ target.milestone }}</p>
+                            <b>Assigned To:</b>
+                            <ul>
+                                {% for assignee in target.assigned_to.all %}
+                                    <li>{{ assignee }}</li>
+                                {% endfor %}
+                            </ul>
+                            <b>Completed By:</b>
+                            <ul>
+                                {% for assigned_meta in target.targetassignment_set.all %}
+                                    {% if assigned_meta.marked_completed_on %}
+                                        <li>{{ assigned_meta.assignee }}</li>
+                                    {% endif %}
+                                {% empty %}
+                                    <li>No one!</li>
+                                {% endfor %}
+                            </ul>
                             <hr/>
-                            {% if not target.completed_on %}
+                            {% if target in incomplete_tasks %}
                             <form method="POST" action="{% url "projects:achievements:complete-target" project_pk=object.pk pk=target.pk %}">
                                 {% csrf_token %}
                                 <button type="submit" value="Confirm" class="btn btn-success btn-block">Mark Milestone As Complete!</button>
