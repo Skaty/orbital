@@ -102,9 +102,7 @@ class TargetGoalCreateView(CreateView):
 
         return super(TargetGoalCreateView, self).form_valid(form)
 
-
-class GoalCreateView(CreateView):
-    model = Goal
+class BaseTargetCreateView(CreateView):
     template_name_suffix = '_form'
     fields = ['name', 'description', 'deadline']
     success_url = ''
@@ -119,21 +117,26 @@ class GoalCreateView(CreateView):
         except ObjectDoesNotExist:
             return redirect('/')
 
-        self.success_url = reverse_lazy('projects:project-detail',  kwargs={'pk': self.project.pk})
+        self.success_url = reverse_lazy('projects:project-detail', kwargs={'pk': self.project.pk})
 
-        return super(GoalCreateView, self).dispatch(request, *args, **kwargs)
+        return super(BaseTargetCreateView, self).dispatch(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):
         """
         Adds project instance to template context
         """
         kwargs['project'] = self.project
-        return super(GoalCreateView, self).get_context_data(**kwargs)
+        return super(BaseTargetCreateView, self).get_context_data(**kwargs)
 
     def form_valid(self, form):
         form.instance.project = self.project
         form.instance.created_by = self.request.user
-        return super(GoalCreateView, self).form_valid(form)
+        return super(BaseTargetCreateView, self).form_valid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class GoalCreateView(BaseTargetCreateView):
+    model = Goal
 
 
 class GoalUpdateView(UpdateView):
@@ -184,37 +187,8 @@ class TargetDeleteView(DeleteView):
 
 
 @method_decorator(login_required, name='dispatch')
-class MilestoneCreateView(CreateView):
+class MilestoneCreateView(BaseTargetCreateView):
     model = Milestone
-    template_name_suffix = '_form'
-    fields = ['name', 'description', 'deadline']
-    success_url = ''
-
-    def dispatch(self, request, *args, **kwargs):
-        project_pk = self.kwargs.get('project_pk')
-        try:
-            self.project = Project.objects.get(pk=project_pk)
-            if request.user not in self.project.facilitators.all():
-                messages.error(request, 'You are not authorised to perform this action!')
-                return redirect('/')
-        except ObjectDoesNotExist:
-            return redirect('/')
-
-        self.success_url = reverse_lazy('projects:project-detail', kwargs={'pk': self.project.pk})
-
-        return super(MilestoneCreateView, self).dispatch(request, *args, **kwargs)
-
-    def get_context_data(self, **kwargs):
-        """
-        Adds project instance to template context
-        """
-        kwargs['project'] = self.project
-        return super(MilestoneCreateView, self).get_context_data(**kwargs)
-
-    def form_valid(self, form):
-        form.instance.project = self.project
-        form.instance.created_by = self.request.user
-        return super(MilestoneCreateView, self).form_valid(form)
 
 
 @method_decorator(login_required, name='dispatch')
