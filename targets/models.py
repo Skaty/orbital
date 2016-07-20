@@ -56,7 +56,7 @@ class TargetAssignment(models.Model):
     marked_completed_on = models.DateTimeField(default=None, null=True, blank=True)
 
     def __str__(self):
-        return '{target} metadata for {user}'.format(target=self.target, user=self.user)
+        return '{target} metadata for {user}'.format(target=self.target, user=self.assignee)
 
 
 class Milestone(AbstractTarget):
