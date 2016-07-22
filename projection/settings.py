@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'projects.apps.ProjectsConfig',
     'targets.apps.TargetsConfig',
     'miscellaneous.apps.MiscellaneousConfig',
+    'social.apps.django_app.default'
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -56,6 +57,11 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'projection.backends.NUSOpenId',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 ROOT_URLCONF = 'projection.urls'
 
@@ -70,6 +76,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
             ],
         },
     },
@@ -154,4 +162,8 @@ LOGIN_REDIRECT_URL = '/'
 MESSAGE_TAGS = {
     message_constants.ERROR: 'danger'
 }
+
+# Python Social Auth
+
+SOCIAL_AUTH_URL_NAMESPACE = 'sso'
 
