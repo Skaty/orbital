@@ -26,4 +26,5 @@ urlpatterns = [
     url(r'^achievements/', include('targets.urls', namespace='achievements')),
     url(r'^auth/', include('django.contrib.auth.urls', namespace='authentication')),
     url(r'^system/', include('miscellaneous.urls', namespace='system')),
+    url(r'^profiles/', include('profiles.urls', namespace='profiles')),
 ]
