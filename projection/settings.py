@@ -57,6 +57,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'projection.middleware.TimezoneMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -168,3 +169,6 @@ MESSAGE_TAGS = {
 
 SOCIAL_AUTH_URL_NAMESPACE = 'sso'
 
+# Timezones
+
+DEFAULT_TZ = 'Asia/Singapore'
