@@ -48,6 +48,8 @@
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Welcome, {{ request.user.get_username }} <span class="caret"></span></a>
               <ul class="dropdown-menu">
+                <li><a href="{% url 'profiles:preferences-display' %}">Your Preferences</a></li>
+                <li class="divider"></li>
                 <li><a href="{% url "authentication:logout" %}?next=/">Logout</a></li>
               </ul>
             </li>

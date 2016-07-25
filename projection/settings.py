@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'projects.apps.ProjectsConfig',
     'targets.apps.TargetsConfig',
     'miscellaneous.apps.MiscellaneousConfig',
-    'social.apps.django_app.default'
+    'social.apps.django_app.default',
+    'profiles.apps.ProfilesConfig',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -56,6 +57,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'projection.middleware.TimezoneMiddleware',
 ]
 
 AUTHENTICATION_BACKENDS = (
@@ -167,3 +169,6 @@ MESSAGE_TAGS = {
 
 SOCIAL_AUTH_URL_NAMESPACE = 'sso'
 
+# Timezones
+
+DEFAULT_TZ = 'Asia/Singapore'
