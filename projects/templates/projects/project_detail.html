@@ -3,7 +3,7 @@
 {% block body %}
     <div class="container">
         <h2>Project: {{ object.name }}</h2>
-        <p>Facilitated by: {% for facilitator in object.facilitators.all %} {{ facilitator }} {% endfor %}</p>
+        <p>Facilitated by: {% for facilitator in object.facilitators.all %}<a href="{% url 'profiles:profile-detail' facilitator.pk %}">{{ facilitator.get_full_name | default:facilitator }}</a>{% if not forloop.last %}, {% endif %} {% endfor %}</p>
         {% if object.goal %}
             <div class="page-header">
               <h2><span class="label label-warning">Project Goal</span> {{ object.goal.name }} {% if is_facilitator %}<a href="{% url "projects:achievements:update-goal" project_pk=object.pk pk=object.goal.pk %}" role="button" class="btn btn-default">Modify Goal</a>{% endif %}</h2>
