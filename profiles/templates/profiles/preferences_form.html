@@ -3,24 +3,36 @@
 
 {% block body %}
     <div class="container">
-        <h3>Your preferences</h3>
-        <div class="jumbotron">
-            <form method="POST" action="">
-                {% csrf_token %}
-                {% for field in form %}
-                    <div class="form-group {{ field.errors | yesno:"has-error,," }}">
-                        {{ field.label_tag }} {{ field | addcss:"form-control input-lg"}}
-                        {% if field.errors %}
-                            <span id="help_{{ field.id_for_label }}" class="help-block">
-                              {% for error in field.errors %}
-                                {{ error }}<br />
-                              {% endfor %}
-                            </span>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-                <button type="submit" class="btn btn-default btn-block">Submit!</button>
-            </form>
-        </div>
+        <h2>Preferences</h2>
+        {% for formgroup in forms %}
+            {% if not forloop.counter|divisibleby:2 %}
+                <div class="row">
+            {% endif %}
+
+            <div class="col-md-6">
+                <div class="jumbotron">
+                <h2>{{ formgroup.title }}</h2>
+                <form method="POST" action="{{ formgroup.url }}">
+                    {% csrf_token %}
+                    {% for field in formgroup.form %}
+                        <div class="form-group {{ field.errors | yesno:"has-error,," }}">
+                            {{ field.label_tag }} {{ field | addcss:"form-control input-lg"}}
+                            {% if field.errors %}
+                                <span id="help_{{ field.id_for_label }}" class="help-block">
+                                  {% for error in field.errors %}
+                                    {{ error }}<br />
+                                  {% endfor %}
+                                </span>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                    <button type="submit" class="btn btn-default btn-block">Submit!</button>
+                </form>
+                </div>
+            </div>
+            {% if forloop.counter|divisibleby:2 or forloop.last %}
+                </div>
+            {% endif %}
+        {% endfor %}
     </div>
 {% endblock %}
