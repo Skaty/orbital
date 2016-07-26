@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     'miscellaneous.apps.MiscellaneousConfig',
     'social.apps.django_app.default',
     'profiles.apps.ProfilesConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE_CLASSES = [
