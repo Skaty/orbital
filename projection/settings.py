@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+
+import bleach
 from django.contrib.messages import constants as message_constants
 import dj_database_url
 
@@ -172,3 +174,26 @@ SOCIAL_AUTH_URL_NAMESPACE = 'sso'
 # Timezones
 
 DEFAULT_TZ = 'Asia/Singapore'
+
+# Bleach
+
+BLEACH_ALLOWED_TAGS = bleach.ALLOWED_TAGS + [
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'img',
+    'p',
+    'sup',
+    'sub',
+    'code',
+]
+
+EXTRA_ALLOWED = {
+    'img': ['src', 'alt', 'width', 'height'],
+    'p': ['style'],
+}
+
+BLEACH_ALLOWED_ATTRIBUTES = {**bleach.ALLOWED_ATTRIBUTES, **EXTRA_ALLOWED}
