@@ -5,22 +5,7 @@
     <div class="container">
         <h3>Milestone for {{ project }}</h3>
         <div class="jumbotron">
-            <form method="POST" action="">
-                {% csrf_token %}
-                {% for field in form %}
-                    <div class="form-group {{ field.errors | yesno:"has-error,," }}">
-                        {{ field.label_tag }} {{ field | addcss:"form-control input-lg"}}
-                        {% if field.errors %}
-                            <span id="help_{{ field.id_for_label }}" class="help-block">
-                              {% for error in field.errors %}
-                                {{ error }}<br />
-                              {% endfor %}
-                            </span>
-                        {% endif %}
-                    </div>
-                {% endfor %}
-                <button type="submit" class="btn btn-default btn-block">Submit!</button>
-            </form>
+            {% include 'bootstrap_form.html' with form=form cta_text='Submit!' %}
         </div>
     </div>
 {% endblock %}
