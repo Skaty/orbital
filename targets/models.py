@@ -19,10 +19,7 @@ class AbstractTarget(models.Model):
     created_by = models.ForeignKey(settings.AUTH_USER_MODEL)
 
     def is_due(self):
-        if not self.deadline:
-            return False
-
-        return self.deadline < timezone.now()
+        return self.deadline and (self.deadline < timezone.now())
 
     def has_permission(self, user):
         return user == self.created_by

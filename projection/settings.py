@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'miscellaneous.apps.MiscellaneousConfig',
     'social.apps.django_app.default',
     'profiles.apps.ProfilesConfig',
+    'notifications',
 ]
 
 MIDDLEWARE_CLASSES = [

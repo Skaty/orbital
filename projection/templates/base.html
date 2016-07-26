@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load notifications_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -46,6 +47,10 @@
           {% if not request.user.is_authenticated %}
           <li><a href="{% url "authentication:login" %}?next=/">Login</a></li>
           {% else %}
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-bell"></span> Notifications {% live_notify_badge classes="badge" %}</a>
+              {% live_notify_list classes="dropdown-menu" %}
+            </li>
             <li class="dropdown">
               <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">Welcome, {{ request.user.get_username }} <span class="caret"></span></a>
               <ul class="dropdown-menu">
@@ -100,6 +105,8 @@
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
     <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
+    <script src="{% static 'notifications/notify.js' %}" type="text/javascript"></script>
+    {% register_notify_callbacks callbacks='fill_notification_list,fill_notification_badge' %}
 
     <script type="text/javascript">
       $(function() {
