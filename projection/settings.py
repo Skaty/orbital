@@ -173,3 +173,11 @@ SOCIAL_AUTH_URL_NAMESPACE = 'sso'
 # Timezones
 
 DEFAULT_TZ = 'Asia/Singapore'
+
+# REST API
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}

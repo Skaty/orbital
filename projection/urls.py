@@ -27,4 +27,8 @@ urlpatterns = [
     url(r'^auth/', include('django.contrib.auth.urls', namespace='authentication')),
     url(r'^system/', include('miscellaneous.urls', namespace='system')),
     url(r'^profiles/', include('profiles.urls', namespace='profiles')),
+    url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
+    url(r'^api/', include([
+        url('^projects/', include('projects.api.urls', namespace='projects_api')),
+    ])),
 ]
