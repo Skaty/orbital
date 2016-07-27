@@ -152,7 +152,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+if os.getenv('PROJECTION_APP_ENV', 'debug') == 'production':
+    STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 # Test Runner Configuration
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
