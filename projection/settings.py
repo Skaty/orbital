@@ -42,7 +42,6 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django.contrib.sites',
     'django_nose',
     'postman',
     'projects.apps.ProjectsConfig',
@@ -207,6 +206,3 @@ POSTMAN_AUTO_MODERATE_AS = True
 POSTMAN_DISABLE_USER_EMAILING = True
 POSTMAN_NOTIFIER_APP = None
 POSTMAN_MAILER_APP = None
-
-# Django Sites
-SITE_ID = 1
