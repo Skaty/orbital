@@ -43,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_nose',
+    'postman',
     'projects.apps.ProjectsConfig',
     'targets.apps.TargetsConfig',
     'miscellaneous.apps.MiscellaneousConfig',
@@ -197,3 +198,10 @@ EXTRA_ALLOWED = {
 }
 
 BLEACH_ALLOWED_ATTRIBUTES = {**bleach.ALLOWED_ATTRIBUTES, **EXTRA_ALLOWED}
+
+# django-postman
+POSTMAN_DISALLOW_ANONYMOUS = True
+POSTMAN_AUTO_MODERATE_AS = True
+POSTMAN_DISABLE_USER_EMAILING = True
+POSTMAN_NOTIFIER_APP = None
+POSTMAN_MAILER_APP = None

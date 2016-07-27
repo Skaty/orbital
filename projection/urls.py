@@ -27,4 +27,5 @@ urlpatterns = [
     url(r'^auth/', include('django.contrib.auth.urls', namespace='authentication')),
     url(r'^system/', include('miscellaneous.urls', namespace='system')),
     url(r'^profiles/', include('profiles.urls', namespace='profiles')),
+    url(r'^messaging/', include('postman.urls', namespace='postman')),
 ]
