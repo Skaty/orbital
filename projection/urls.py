@@ -30,6 +30,7 @@ urlpatterns = [
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
     url(r'^api/', include([
         url('^projects/', include('projects.api.urls', namespace='projects_api')),
+        url('^achievements/', include('targets.api.urls', namespace='achievements_api')),
     ])),
     url(r'^messaging/', include('postman.urls', namespace='postman')),
 ]
