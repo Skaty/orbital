@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+
+import bleach
 from django.contrib.messages import constants as message_constants
 import dj_database_url
 
@@ -41,6 +43,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_nose',
+    'postman',
     'projects.apps.ProjectsConfig',
     'targets.apps.TargetsConfig',
     'miscellaneous.apps.MiscellaneousConfig',
@@ -149,7 +152,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+if os.getenv('PROJECTION_APP_ENV', 'debug') == 'production':
+    STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 # Test Runner Configuration
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
@@ -181,3 +185,33 @@ REST_FRAMEWORK = {
         'rest_framework.permissions.IsAuthenticated',
     ]
 }
+
+# Bleach
+
+BLEACH_ALLOWED_TAGS = bleach.ALLOWED_TAGS + [
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'img',
+    'p',
+    'sup',
+    'sub',
+    'code',
+]
+
+EXTRA_ALLOWED = {
+    'img': ['src', 'alt', 'width', 'height'],
+    'p': ['style'],
+}
+
+BLEACH_ALLOWED_ATTRIBUTES = {**bleach.ALLOWED_ATTRIBUTES, **EXTRA_ALLOWED}
+
+# django-postman
+POSTMAN_DISALLOW_ANONYMOUS = True
+POSTMAN_AUTO_MODERATE_AS = True
+POSTMAN_DISABLE_USER_EMAILING = True
+POSTMAN_NOTIFIER_APP = None
+POSTMAN_MAILER_APP = None

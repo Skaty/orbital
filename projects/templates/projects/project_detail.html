@@ -1,5 +1,7 @@
 {% extends "base.html" %}
 
+{% load custom_filters %}
+
 {% block body %}
     <div class="container">
         <h2>Project: {{ object.name }}</h2>
@@ -7,13 +9,18 @@
         {% if object.goal %}
             <div class="page-header">
               <h2><span class="label label-warning">Project Goal</span> {{ object.goal.name }} {% if is_facilitator %}<a href="{% url "projects:achievements:update-goal" project_pk=object.pk pk=object.goal.pk %}" role="button" class="btn btn-default">Modify Goal</a>{% endif %}</h2>
+                <div style="font-style: italic">
+                    {% if object.goal.deadline %}
+                        Due On: <span {% if object.goal.is_due %} class="text-danger"{% endif %}>{{ object.goal.deadline }}</span> {% if object.goal.is_due %}<span class="label label-danger">OVERDUE</span>{% endif %}
+                    {% else %}
+                        No Due Date!
+                    {% endif %}
+                </div>
             </div>
-            <p><b>Description of Goal:</b> {{ object.goal.description }}</p>
-            {% if object.goal.deadline %}
-                <p>Due On: <span {% if object.goal.is_due %} class="text-danger"{% endif %}>{{ object.goal.deadline }}</span> {% if object.goal.is_due %}<span class="label label-danger">OVERDUE</span>{% endif %}</p>
-            {% else %}
-                <p>No Due Date!</p>
-            {% endif %}
+            <p><b>Description of Goal:</b><p>
+                {{ object.goal.description|bleach_sanitize|safe }}
+            </p>
+            </p>
         {% else %}
             <div class="page-header">
               <h2><span class="label label-warning">Project Goal</span> <a href="{% url "projects:achievements:add-goal" project_pk=object.pk %}" role="button" class="btn btn-success">Add Goal</a></h2>
@@ -40,7 +47,7 @@
                     </div>
                     <div id="milestones-collapse-{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="milestones-collapse-heading-{{ forloop.counter }}">
                         <div class="panel-body">
-                            <b>Description of Milestone:</b> <p>{{ milestone.meta.description }}</p>
+                            <b>Description of Milestone:</b><br/><p>{{ milestone.meta.description|bleach_sanitize|safe }}</p>
                             {% if is_facilitator %}
                             <form method="POST" action="{% url "projects:achievements:delete-milestone" project_pk=object.pk pk=milestone.meta.pk %}">
                                 {% csrf_token %}

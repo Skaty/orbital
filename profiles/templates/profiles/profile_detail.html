@@ -4,11 +4,10 @@
     <div class="container">
         <h2>
             {{ object.get_full_name }}
-            <div class="btn-group" role="group" aria-label="...">
-              <a type="button" class="btn btn-default">
-                  <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Message User</a>
-              <button type="button" class="btn btn-default">Middle</button>
-              <button type="button" class="btn btn-default">Right</button>
+            <div class="btn-group" role="group" aria-label="Profile Actions">
+              <a type="button" class="btn btn-default" href="{% url 'postman:write' recipients=object.get_username %}">
+                  <span class="glyphicon glyphicon-envelope" aria-hidden="true"></span> Message User
+              </a>
             </div>
         </h2>
         <div class="row">

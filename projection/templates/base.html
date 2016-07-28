@@ -1,4 +1,5 @@
 {% load staticfiles %}
+{% load postman_tags %}
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -26,6 +27,10 @@
     {% block pre-body-scripts %}
 
     {% endblock %}
+    {# Postman #}
+    {% block extrahead %}
+
+    {% endblock %}
   </head>
 
   <body>
@@ -43,6 +48,8 @@
         </div>
         <div id="navbar" class="navbar-collapse collapse">
           <ul class="nav navbar-nav navbar-right">
+            {% postman_unread as unread_count %}
+            <li><a href="{% url 'postman:inbox' %}">Messages {% if unread_count %}<span class="badge">{{ unread_count }}</span>{% endif %}</a></li>
           {% if not request.user.is_authenticated %}
           <li><a href="{% url "authentication:login" %}?next=/">Login</a></li>
           {% else %}
@@ -82,7 +89,12 @@
             {% endfor %}
           {% endif %}
       {% block body %}
-
+        <div class="container">
+          {% block postman_menu %}
+          {% endblock %}
+          {% block content %}
+          {% endblock %}
+        </div>
       {% endblock %}
 
       <hr>
@@ -99,6 +111,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.14.1/moment.min.js"></script>
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datetimepicker/4.17.37/js/bootstrap-datetimepicker.min.js"></script>
+    <script src="//cdn.tinymce.com/4/tinymce.min.js"></script>
 
     <script type="text/javascript">
       $(function() {
@@ -106,8 +119,13 @@
         $('.bs-datetime').datetimepicker({
           format: 'Y-MM-DD HH:mm:ss'
         });
+        tinymce.init({
+          selector:'textarea',
+          plugins: "image",
+        });
       });
     </script>
+    <script></script>
     {% block post-body-scripts %}
 
     {% endblock %}
