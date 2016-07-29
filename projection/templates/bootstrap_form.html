@@ -1,0 +1,18 @@
+{% load addcss %}
+
+<form method="POST" action="{{ action|default:'' }}">
+    {% csrf_token %}
+    {% for field in form %}
+        <div class="form-group {{ field.errors | yesno:'has-error,,' }}" style="position: relative">
+            {{ field.label_tag }} {{ field | addcss:"form-control input-lg"}}
+            {% if field.errors %}
+                <span id="help_{{ field.id_for_label }}" class="help-block">
+                  {% for error in field.errors %}
+                    {{ error }}<br />
+                  {% endfor %}
+                </span>
+            {% endif %}
+        </div>
+    {% endfor %}
+    <button type="submit" class="btn btn-default btn-block">{{ cta_text }}</button>
+</form>

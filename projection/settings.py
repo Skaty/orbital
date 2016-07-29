@@ -11,6 +11,8 @@ https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
 import os
+
+import bleach
 from django.contrib.messages import constants as message_constants
 import dj_database_url
 
@@ -41,9 +43,13 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_nose',
-    'projects',
-    'targets',
-    'miscellaneous',
+    'postman',
+    'projects.apps.ProjectsConfig',
+    'targets.apps.TargetsConfig',
+    'miscellaneous.apps.MiscellaneousConfig',
+    'social.apps.django_app.default',
+    'profiles.apps.ProfilesConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -55,7 +61,13 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'projection.middleware.TimezoneMiddleware',
 ]
+
+AUTHENTICATION_BACKENDS = (
+    'projection.backends.NUSOpenId',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
 ROOT_URLCONF = 'projection.urls'
 
@@ -70,6 +82,8 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                'social.apps.django_app.context_processors.backends',
+                'social.apps.django_app.context_processors.login_redirect',
             ],
         },
     },
@@ -138,7 +152,8 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, "static"),
 ]
 
-STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+if os.getenv('PROJECTION_APP_ENV', 'debug') == 'production':
+    STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
 
 # Test Runner Configuration
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
@@ -155,3 +170,48 @@ MESSAGE_TAGS = {
     message_constants.ERROR: 'danger'
 }
 
+# Python Social Auth
+
+SOCIAL_AUTH_URL_NAMESPACE = 'sso'
+
+# Timezones
+
+DEFAULT_TZ = 'Asia/Singapore'
+
+# REST API
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
+
+# Bleach
+
+BLEACH_ALLOWED_TAGS = bleach.ALLOWED_TAGS + [
+    'h1',
+    'h2',
+    'h3',
+    'h4',
+    'h5',
+    'h6',
+    'img',
+    'p',
+    'sup',
+    'sub',
+    'code',
+]
+
+EXTRA_ALLOWED = {
+    'img': ['src', 'alt', 'width', 'height'],
+    'p': ['style'],
+}
+
+BLEACH_ALLOWED_ATTRIBUTES = {**bleach.ALLOWED_ATTRIBUTES, **EXTRA_ALLOWED}
+
+# django-postman
+POSTMAN_DISALLOW_ANONYMOUS = True
+POSTMAN_AUTO_MODERATE_AS = True
+POSTMAN_DISABLE_USER_EMAILING = True
+POSTMAN_NOTIFIER_APP = None
+POSTMAN_MAILER_APP = None
