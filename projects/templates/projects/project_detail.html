@@ -136,7 +136,7 @@
                     </div>
                     <div id="targets-collapse-{{ forloop.counter }}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="targets-heading-{{ forloop.counter }}">
                         <div class="panel-body">
-                            <b>Description:</b> <p>{{ target.description }}</p>
+                            <b>Description:</b><br/><p>{{ target.description|bleach_sanitize|safe }}</p>
                             <b>Milestone:</b> <p>{{ target.milestone }}</p>
                             <b>Assigned To:</b>
                             <ul>
