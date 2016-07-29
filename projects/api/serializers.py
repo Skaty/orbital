@@ -6,7 +6,7 @@ from projects.models import *
 class ProjectSerializer(serializers.ModelSerializer):
     class Meta:
         model = Project
-        fields = ('id', 'created_on', 'ends_on', 'projectgroup_set')
+        fields = ('id', 'created_on', 'ends_on', 'projectgroup_set', 'goal', 'milestone_set')
 
 
 class ProjectGroupSerializer(serializers.ModelSerializer):
