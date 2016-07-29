@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'miscellaneous.apps.MiscellaneousConfig',
     'social.apps.django_app.default',
     'profiles.apps.ProfilesConfig',
+    'rest_framework',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -176,6 +177,14 @@ SOCIAL_AUTH_URL_NAMESPACE = 'sso'
 # Timezones
 
 DEFAULT_TZ = 'Asia/Singapore'
+
+# REST API
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated',
+    ]
+}
 
 # Bleach
 
