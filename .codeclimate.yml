@@ -15,4 +15,5 @@ ratings:
   - "**.js"
   - "**.jsx"
   - "**.py"
-exclude_paths: []
+exclude_paths:
+- "migrations/"

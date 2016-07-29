@@ -9,7 +9,7 @@ from django.utils.decorators import method_decorator
 from django.views.generic import CreateView, ListView, DetailView, UpdateView, DeleteView
 
 from projects.models import Project, ProjectGroup
-from targets.models import Target
+from targets.models import Target, TargetAssignment
 
 
 @method_decorator(login_required, name='dispatch')
@@ -57,6 +57,12 @@ class ProjectDetailView(DetailView):
 
         if kwargs['is_member']:
             kwargs['projectgroup'] = self.request.user.projectgroup_set.get(project=self.object)
+
+            incomplete_tasks = TargetAssignment.objects.filter(assignee=self.request.user,
+                                                               marked_completed_on__isnull=True,
+                                                               target__group=kwargs['projectgroup'])
+
+            kwargs['incomplete_tasks'] = [x.target for x in incomplete_tasks]
 
             for milestone in milestones_list:
                 completed_tasks = Target.objects.filter(group=kwargs['projectgroup'], completed_on__isnull=False,

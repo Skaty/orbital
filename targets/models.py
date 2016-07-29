@@ -38,9 +38,25 @@ class Target(AbstractTarget):
     """
     group = models.ForeignKey('projects.ProjectGroup', on_delete=models.CASCADE)
     milestone = models.ForeignKey('targets.Milestone', default=None, null=True, blank=True, on_delete=models.SET_NULL)
+    assigned_to = models.ManyToManyField(settings.AUTH_USER_MODEL, through='TargetAssignment',
+                                         related_name="assigned_targets")
 
     def __str__(self):
         return self.name
+
+
+class TargetAssignment(models.Model):
+    """
+    Representation of an Assignment of Target to a User.
+
+    Contains metadata regarding the assignment - such as whether the Target has been marked completed by the user
+    """
+    assignee = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    target = models.ForeignKey(Target, on_delete=models.CASCADE)
+    marked_completed_on = models.DateTimeField(default=None, null=True, blank=True)
+
+    def __str__(self):
+        return '{target} metadata for {user}'.format(target=self.target, user=self.assignee)
 
 
 class Milestone(AbstractTarget):
